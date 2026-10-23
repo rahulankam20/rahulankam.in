@@ -1,5 +1,6 @@
 import { KeyRound, MapPin, MessageCircle, ShieldCheck, Smartphone, Sparkles, Zap, type LucideIcon } from "lucide-react";
 import { whyMe } from "../content";
+import { revealDelay } from "../lib/motion";
 import SectionHeading from "../components/SectionHeading";
 
 const icons: Record<string, LucideIcon> = {
@@ -17,11 +18,11 @@ export default function WhyMe() {
       <div className="container-page">
         <SectionHeading eyebrow="Why me" title={whyMe.title} />
         <ul className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-          {whyMe.points.map((point) => {
+          {whyMe.points.map((point, index) => {
             const Icon = icons[point.icon] ?? Sparkles;
             return (
-              <li key={point.title} className="flex gap-4">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-accent">
+              <li key={point.title} data-reveal style={revealDelay(index % 3, 110)} className="group flex gap-4">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/35 to-primary/5 text-accent ring-1 ring-primary/25 transition duration-300 group-hover:-rotate-6 group-hover:scale-110">
                   <Icon className="h-5 w-5" aria-hidden />
                 </span>
                 <div>

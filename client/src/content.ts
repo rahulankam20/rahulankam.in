@@ -7,8 +7,8 @@ export const site = {
   url: "https://rahulankam.in",
   name: "Rahul Ankam",
   role: "AI-enabled full-stack developer",
-  location: "Navi Mumbai, India",
-  locality: "Navi Mumbai",
+  location: "Mumbai, India",
+  locality: "Mumbai",
   region: "Maharashtra",
   email: "rahulankam1234@gmail.com", // switch to your Zoho address once it receives mail
   phoneDisplay: "+91 84250 94452",
@@ -27,12 +27,12 @@ export const site = {
 };
 
 export const seo = {
-  title: "Rahul Ankam | Websites & Online Stores for Businesses | Navi Mumbai",
+  title: "Rahul Ankam | Websites & Online Stores for Businesses | Mumbai",
   description:
-    "Full-stack developer in Navi Mumbai building fast, mobile-first websites and online stores with UPI checkout and GST invoices. See a free preview before you pay.",
-  portfolioTitle: "Rahul Ankam | AI-Enabled Full-Stack Developer | Navi Mumbai",
+    "Full-stack developer in Mumbai building fast, mobile-first websites and online stores with UPI checkout and GST invoices. See a free preview before you pay.",
+  portfolioTitle: "Rahul Ankam | AI-Enabled Full-Stack Developer | Mumbai",
   portfolioDescription:
-    "Rahul Ankam is an AI-enabled full-stack developer in Navi Mumbai: React, Node.js, Java and Spring, and RAG chatbots on local LLMs.",
+    "Rahul Ankam is an AI-enabled full-stack developer in Mumbai: React, Node.js, Java and Spring, and RAG chatbots on local LLMs.",
   image: "/og-image.jpg",
   imageAlt: "Rahul Ankam: websites and online stores, with screenshots of an online store built by Rahul",
 };
@@ -46,8 +46,12 @@ export const nav = [
 ];
 
 export const hero = {
-  eyebrow: "Rahul Ankam · Full-stack developer · Navi Mumbai",
+  eyebrow: "Rahul Ankam · Full-stack developer · Mumbai",
   title: "Websites and online stores that bring you customers.",
+  // This word of the title is drawn in the orange gradient.
+  titleHighlight: "customers.",
+  // Small floating labels around the screenshots in the hero.
+  badges: ["UPI + cash on delivery", "GST invoices built in"],
   subtitle:
     "I build fast, mobile-first websites for small businesses, and complete online stores with UPI checkout, GST invoices and an admin panel. See a free preview of your site before you pay anything.",
   points: ["Free preview in 48 hours", "Pay only if you like it", "Live in about a week"],
@@ -56,8 +60,22 @@ export const hero = {
   // Shown instead when site.showServices is false.
   portfolioTitle: "Full-stack developer building fast, reliable web apps.",
   portfolioSubtitle:
-    "AI-enabled full-stack developer at MKCL, Navi Mumbai. React and Node.js, Java and Spring, and RAG chatbots on local LLMs.",
+    "Mumbai-based AI-enabled full-stack developer at MKCL. React and Node.js, Java and Spring, and RAG chatbots on local LLMs.",
 };
+
+// The scrolling strip under the hero.
+export const marquee = [
+  "Business websites",
+  "Online stores",
+  "UPI checkout",
+  "Cash on delivery",
+  "GST invoices",
+  "WhatsApp-ready",
+  "Mobile-first",
+  "Google-ready SEO",
+  "Free hosting",
+  "Care plans",
+];
 
 export const featured = {
   kicker: "Featured project · E-commerce",
@@ -73,6 +91,13 @@ export const featured = {
     "300+ automated tests and a 200-shopper load test",
   ],
   stack: ["React", "TypeScript", "Node.js", "Express", "PostgreSQL", "Docker", "Cashfree"],
+  // Count up when they scroll into view. All measured on the store itself.
+  stats: [
+    { value: 300, suffix: "+", label: "automated tests" },
+    { value: 200, suffix: "", label: "shoppers at once in the load test" },
+    { value: 0, suffix: "", label: "items oversold under that load" },
+    { value: 8, suffix: "", label: "automatic order emails" },
+  ],
   note: "The demo uses fictional products and simulated payments. The code is private; a live demo is available on request.",
   demoCta: "Ask for a live demo",
   demoMessage: "Hi Rahul, I'd like a live demo of your online store.",
@@ -238,7 +263,7 @@ export const whyMe = {
     {
       icon: "pin",
       title: "Local and online",
-      text: "Based in Navi Mumbai. I can meet you in Mumbai or Navi Mumbai, and I work with clients anywhere online.",
+      text: "Based in Mumbai. I can meet you anywhere in Mumbai or Navi Mumbai, and I work with clients anywhere online.",
     },
   ],
 };
@@ -357,6 +382,14 @@ export const contact = {
   },
 };
 
+// The band just before the contact form (shown with the services).
+export const ctaBand = {
+  title: "Ready to see your website?",
+  text: "Send me your business name. Within 48 hours you'll see a preview of your new site, and you pay only if you like it.",
+  primary: "Get my free preview",
+  secondary: "Or fill the form",
+};
+
 export const footer = {
-  tagline: "Websites, online stores and full-stack development · Navi Mumbai",
+  tagline: "Websites, online stores and full-stack development · Mumbai",
 };

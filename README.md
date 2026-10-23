@@ -1,6 +1,6 @@
 # rahulankam.in
 
-The website of Rahul Ankam, a full-stack developer in Navi Mumbai. It sells websites and online stores to businesses, and shows Rahul's work and experience.
+The website of Rahul Ankam, a full-stack developer in Mumbai. It sells websites and online stores to businesses, and shows Rahul's work and experience.
 
 Built with React, Vite and Tailwind CSS. The page is pre-rendered to plain HTML at build time, so it loads fast on phones and every search engine can read it. Hosted free on Cloudflare, as a Worker that only serves the built files: see [DEPLOY.md](DEPLOY.md).
 

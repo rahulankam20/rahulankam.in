@@ -17,10 +17,10 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label="Switch between light and dark theme"
-      className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-muted hover:text-foreground"
+      className="group inline-flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-muted hover:text-foreground"
     >
-      <Moon className="h-5 w-5 dark:hidden" aria-hidden />
-      <Sun className="hidden h-5 w-5 dark:block" aria-hidden />
+      <Moon className="h-5 w-5 transition-transform duration-500 group-hover:-rotate-[25deg] dark:hidden" aria-hidden />
+      <Sun className="hidden h-5 w-5 transition-transform duration-700 group-hover:rotate-90 dark:block" aria-hidden />
     </button>
   );
 }

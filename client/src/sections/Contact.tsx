@@ -64,9 +64,12 @@ export default function Contact() {
   return (
     <section id="contact" className="scroll-mt-20 border-t border-border bg-muted/50 py-20 sm:py-24">
       <div className="container-page grid gap-12 lg:grid-cols-[1fr_1.15fr]">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wider text-accent">Contact</p>
-          <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">
+        <div data-reveal="left">
+          <p className="flex items-center gap-3 text-sm font-semibold uppercase tracking-wider text-accent">
+            <span aria-hidden className="h-px w-8 bg-gradient-to-r from-accent to-transparent" />
+            Contact
+          </p>
+          <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-[2.6rem] sm:leading-[1.1]">
             {services ? contact.title : contact.portfolioTitle}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">{services ? contact.subtitle : contact.portfolioSubtitle}</p>
@@ -99,16 +102,20 @@ export default function Contact() {
           </ul>
 
           <div className="mt-8 flex gap-3">
-            <a href={site.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card transition hover:bg-muted">
+            <a href={site.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted">
               <FaLinkedin className="h-5 w-5" aria-hidden />
             </a>
-            <a href={site.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card transition hover:bg-muted">
+            <a href={site.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted">
               <FaGithub className="h-5 w-5" aria-hidden />
             </a>
           </div>
         </div>
 
-        <form onSubmit={onSubmit} className="rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
+        <form
+          onSubmit={onSubmit}
+          data-reveal="right"
+          className="rounded-3xl border border-border bg-card p-6 shadow-sm transition duration-500 focus-within:border-primary/50 focus-within:shadow-2xl focus-within:shadow-primary/15 sm:p-8"
+        >
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="block text-sm font-semibold">
               {text.name}
@@ -145,8 +152,8 @@ export default function Contact() {
             {status === "sending" ? text.sending : text.submit}
           </button>
           <p role="status" aria-live="polite" className="mt-4 min-h-6 text-sm">
-            {status === "sent" && <span className="font-medium text-accent">{text.success}</span>}
-            {status === "error" && <span className="font-medium text-red-600 dark:text-red-400">{text.error}</span>}
+            {status === "sent" && <span className="load-in inline-block font-medium text-accent">{text.success}</span>}
+            {status === "error" && <span className="load-in inline-block font-medium text-red-600 dark:text-red-400">{text.error}</span>}
           </p>
         </form>
       </div>

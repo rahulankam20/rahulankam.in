@@ -1,17 +1,22 @@
 import { site } from "./content";
+import { useScrollReveal } from "./lib/motion";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import FloatingWhatsApp from "./components/FloatingWhatsApp";
 import Hero from "./sections/Hero";
+import Marquee from "./sections/Marquee";
 import Work from "./sections/Work";
 import Services from "./sections/Services";
 import Process from "./sections/Process";
 import WhyMe from "./sections/WhyMe";
 import About from "./sections/About";
 import Faq from "./sections/Faq";
+import CtaBand from "./sections/CtaBand";
 import Contact from "./sections/Contact";
 
 export default function App() {
+  useScrollReveal();
+
   return (
     <>
       <a
@@ -23,6 +28,7 @@ export default function App() {
       <Navbar />
       <main id="main">
         <Hero />
+        {site.showServices && <Marquee />}
         <Work />
         {site.showServices && (
           <>
@@ -32,7 +38,12 @@ export default function App() {
           </>
         )}
         <About />
-        {site.showServices && <Faq />}
+        {site.showServices && (
+          <>
+            <Faq />
+            <CtaBand />
+          </>
+        )}
         <Contact />
       </main>
       <Footer />

@@ -25,11 +25,12 @@ export default function FloatingWhatsApp() {
       aria-label={`Chat with ${site.name} on WhatsApp`}
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
-      className={`fixed bottom-5 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-whatsapp text-[#08291a] shadow-lg shadow-black/25 transition duration-300 hover:scale-105 ${
-        visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
+      className={`fixed bottom-5 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-whatsapp text-whatsapp-foreground shadow-lg shadow-black/25 transition duration-500 hover:scale-110 ${
+        visible ? "translate-y-0 scale-100 opacity-100" : "pointer-events-none translate-y-6 scale-75 opacity-0"
       }`}
     >
-      <SiWhatsapp className="h-7 w-7" aria-hidden />
+      <span aria-hidden className="ping-slow absolute inset-0 rounded-full bg-whatsapp" />
+      <SiWhatsapp className="relative h-7 w-7" aria-hidden />
     </a>
   );
 }

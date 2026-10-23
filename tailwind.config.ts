@@ -4,6 +4,17 @@ import type { Config } from "tailwindcss";
 // and one for dark, so every utility below works in both themes.
 const color = (name: string) => `hsl(var(--${name}) / <alpha-value>)`;
 
+const systemSans = [
+  "ui-sans-serif",
+  "system-ui",
+  "-apple-system",
+  "Segoe UI",
+  "Roboto",
+  "Helvetica Neue",
+  "Arial",
+  "sans-serif",
+];
+
 export default {
   darkMode: "class",
   content: ["./client/index.html", "./client/src/**/*.{ts,tsx}"],
@@ -17,19 +28,12 @@ export default {
         border: color("border"),
         primary: { DEFAULT: color("primary"), foreground: color("primary-foreground") },
         accent: color("accent"),
-        whatsapp: "#25D366",
+        whatsapp: { DEFAULT: color("whatsapp"), foreground: color("whatsapp-foreground") },
       },
       fontFamily: {
-        sans: [
-          "ui-sans-serif",
-          "system-ui",
-          "-apple-system",
-          "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
-          "Arial",
-          "sans-serif",
-        ],
+        sans: systemSans,
+        // Headings: self-hosted from @fontsource-variable/bricolage-grotesque (imported in main.tsx).
+        display: ['"Bricolage Grotesque Variable"', ...systemSans],
       },
     },
   },

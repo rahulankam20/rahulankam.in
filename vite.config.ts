@@ -54,7 +54,7 @@ function seoFromContent(): Plugin {
           email: site.email,
           ...(site.phone ? { telephone: site.phone } : {}),
           address,
-          areaServed: ["Navi Mumbai", "Mumbai", "India"],
+          areaServed: ["Mumbai", "Navi Mumbai", "India"],
           founder: { "@id": `${url}#person` },
         });
       }
