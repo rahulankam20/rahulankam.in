@@ -2,27 +2,27 @@
 
 About 30 minutes of clicking, plus up to a day waiting for the domain to switch over. Everything here is on free plans. Checked October 2026; dashboards move buttons around, so look for the same words if a label differs.
 
-## 1. Create the Cloudflare Pages project
+The site runs as a **Cloudflare Worker that only serves static files**. `wrangler.jsonc` tells Cloudflare to publish the built `dist/` folder; no server code runs, and requests for static files are free.
 
-The site is on the `main` branch of `rahulankam20/rahulankam.in`, ready to build.
+## 1. Create the Cloudflare project
 
 1. Sign up at [dash.cloudflare.com](https://dash.cloudflare.com) (free).
-2. **Workers & Pages → Create application → Pages → Connect to Git.** Cloudflare now shows Workers first; Pages is still supported, so pick the Pages option.
-3. Connect GitHub and choose `rahulankam20/rahulankam.in`. You can give Cloudflare access to just this one repository.
-4. Settings:
-   - Production branch: `main`
-   - Framework preset: **React (Vite)**
+2. **Workers & Pages → Create application → Import a repository.** Connect GitHub and choose `rahulankam20/rahulankam.in`. You can give Cloudflare access to just this one repository.
+3. Settings:
+   - Project (Worker) name: `rahulankam-in`. It must match `name` in `wrangler.jsonc`; if you pick another name, change it there too.
    - Build command: `npm run build`
-   - Build output directory: `dist`
-   - Node version: nothing to set; `.nvmrc` pins Node 22.
-5. **Save and Deploy.** When it finishes, open the `….pages.dev` link and check the site.
+   - Deploy command: `npx wrangler deploy` (the default)
+   - Environment variables: none. `.nvmrc` pins Node 22.
+4. **Deploy.** When it finishes, open the `rahulankam-in.….workers.dev` link and check the site.
+
+Every push to `main` rebuilds and redeploys automatically. If a build fails, open the project's **Deployments** (or **Builds**) tab and read the log.
 
 ## 2. Move the domain's DNS to Cloudflare
 
-Your site lives on the bare domain (`rahulankam.in`), and Cloudflare Pages can only serve a bare domain whose DNS is on Cloudflare.
+A Worker can only serve your domain if the domain's DNS is on Cloudflare.
 
 1. Cloudflare: **Add a domain** (or **Onboard a domain**) → `rahulankam.in` → **Free** plan.
-2. It imports your current DNS records. Delete GoDaddy's parking records (an `A` record for `@` and a `CNAME` for `www` pointing at GoDaddy). Don't add a record for the site yourself: Pages does that in step 3, and a hand-made one causes a 522 error.
+2. It imports your current DNS records. Delete GoDaddy's parking records (an `A` record for `@` and a `CNAME` for `www` pointing at GoDaddy). Don't add a record for the site yourself: Cloudflare does that in step 3.
 3. Cloudflare shows **two nameservers**. Copy them exactly.
 4. GoDaddy: **Domain Portfolio → rahulankam.in → DNS**.
    - If **DNSSEC** is on, turn it off first. It's the most common reason a domain gets stuck.
@@ -31,7 +31,7 @@ Your site lives on the bare domain (`rahulankam.in`), and Cloudflare Pages can o
 
 ## 3. Point the domain at the site
 
-1. **Workers & Pages → your project → Custom domains → Set up a domain → `rahulankam.in`.** Cloudflare creates the DNS record and the HTTPS certificate.
+1. **Workers & Pages → rahulankam-in → Settings → Domains & Routes → Add → Custom domain → `rahulankam.in`.** Cloudflare creates the DNS record and the HTTPS certificate.
 2. Send `www` to the bare domain:
    - DNS: add an `A` record, name `www`, value `192.0.2.1`, **Proxied** (orange cloud). It only exists so the redirect below can catch the request.
    - **Rules → Redirect Rules → Create from template → "Redirect from WWW to root"**, status 301. Save.
@@ -39,7 +39,7 @@ Your site lives on the bare domain (`rahulankam.in`), and Cloudflare Pages can o
 
 ## 4. After it's live
 
-- **Visitor numbers:** project → **Metrics → Web Analytics → Enable**. Free, no cookies, so no cookie banner needed.
+- **Visitor numbers:** **Analytics & Logs → Web Analytics → Add a site → `rahulankam.in`.** Free, no cookies, so no cookie banner needed. If Cloudflare shows a script snippet instead of an automatic option, add it to `client/index.html` (or ask for help).
 - **Google:** add `rahulankam.in` at [Google Search Console](https://search.google.com/search-console) as a *Domain* property (it gives you a TXT record to add in Cloudflare DNS), then submit `https://rahulankam.in/sitemap.xml`.
 - **WhatsApp preview:** send `https://rahulankam.in` to yourself on WhatsApp. If an old preview sticks, send `https://rahulankam.in/?v=2`; WhatsApp caches previews per link.
 - **Contact form:** send yourself a test message. The EmailJS template should use `{{from_name}}`, `{{from_email}}` and `{{message}}`. The free plan allows 200 messages a month. Its domain allowlist is paid-only, so the form uses EmailJS's free bot blocking and rate limit; add reCAPTCHA in EmailJS if spam starts.
@@ -55,4 +55,4 @@ Zoho Mail's Forever Free plan is still offered in India (up to 5 users, 5 GB eac
 
 ## Updating the site later
 
-Edit `client/src/content.ts` (or anything else), commit, and push to `main`. Cloudflare rebuilds and publishes in about a minute. Pull requests get their own preview link.
+Edit `client/src/content.ts` (or anything else), commit, and push to `main`. Cloudflare rebuilds and publishes in about a minute.

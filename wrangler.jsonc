@@ -1,0 +1,11 @@
+// Cloudflare publishes the built site (dist/) as static files; no server code runs.
+// "name" must match the Worker's name in the Cloudflare dashboard.
+{
+  "name": "rahulankam-in",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    // Unknown URLs get dist/404.html with a real 404 status.
+    "not_found_handling": "404-page"
+  }
+}

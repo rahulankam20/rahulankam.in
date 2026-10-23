@@ -2,7 +2,7 @@
 
 The website of Rahul Ankam, a full-stack developer in Navi Mumbai. It sells websites and online stores to businesses, and shows Rahul's work and experience.
 
-Built with React, Vite and Tailwind CSS. The page is pre-rendered to plain HTML at build time, so it loads fast on phones and every search engine can read it. Hosted free on Cloudflare Pages: see [DEPLOY.md](DEPLOY.md).
+Built with React, Vite and Tailwind CSS. The page is pre-rendered to plain HTML at build time, so it loads fast on phones and every search engine can read it. Hosted free on Cloudflare, as a Worker that only serves the built files: see [DEPLOY.md](DEPLOY.md).
 
 ## Changing what the site says
 
@@ -39,6 +39,7 @@ npm run preview   # serve dist/ at http://localhost:4173
 - `client/src/sections/`: one file per page section, in page order in `App.tsx`.
 - `client/src/components/`: navbar, footer, buttons, theme switch, floating WhatsApp button.
 - `client/public/`: copied as-is, including `_headers` (Cloudflare security and caching headers), `404.html`, `robots.txt` and `sitemap.xml`.
+- `wrangler.jsonc`: tells Cloudflare to publish `dist/` as static files. Its `name` must match the Worker's name in the dashboard.
 - `.github/workflows/ci.yml`: checks every pull request type-checks and builds. It doesn't deploy; Cloudflare does.
 
 The contact form sends through EmailJS (free plan: 200 messages a month), loaded only when someone submits.

@@ -1,4 +1,4 @@
-# Checks that the site type-checks and builds. Cloudflare Pages does the
+# Checks that the site type-checks and builds. Cloudflare does the
 # deploying (see DEPLOY.md), so nothing here publishes anything.
 name: Build check
 
