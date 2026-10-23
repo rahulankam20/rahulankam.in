@@ -1,0 +1,24 @@
+# Checks that the site type-checks and builds. Cloudflare Pages does the
+# deploying (see DEPLOY.md), so nothing here publishes anything.
+name: Build check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
