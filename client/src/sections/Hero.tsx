@@ -6,6 +6,7 @@ import { imageSizes, imageSrcSet, imageUrl } from "../lib/images";
 import { contactHref, isWhatsapp } from "../lib/links";
 import { loadDelay, Tilt } from "../lib/motion";
 import CtaLink from "../components/CtaLink";
+import IntroVideo from "../components/IntroVideo";
 
 const badgeIcons = [IndianRupee, Receipt];
 
@@ -61,6 +62,7 @@ export default function Hero() {
               {hero.secondaryCta}
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
             </CtaLink>
+            <IntroVideo />
           </div>
 
           {services && (

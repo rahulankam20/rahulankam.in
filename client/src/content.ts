@@ -63,6 +63,20 @@ export const hero = {
   // The screenshots beside the title: the online store on a computer and a phone.
   image: { src: "/images/store-home-desktop.webp", alt: "Store home page with a bold hero and the store's own sneaker artwork", width: 1366, height: 854 },
   phoneImage: { src: "/images/store-product-mobile.webp", alt: "Product page on a phone", width: 390, height: 844 },
+  // The 60-second intro video (made in the shoe-resell workspace, videos/portfolio).
+  // It loads only when the button is pressed. An empty src hides the button.
+  video: {
+    src: "/videos/intro.mp4",
+    poster: "/images/intro-poster.webp",
+    label: "Watch the 60-second intro",
+    title: "Websites and online stores that bring you customers: a 60-second intro",
+    description:
+      "Three working demos in 60 seconds: an online store with UPI checkout and GST invoices, a clinic website in English, Marathi and Hindi that books on WhatsApp, and a restaurant website with a 44-dish menu and catering quotes.",
+    uploadDate: "2026-10-25",
+    duration: "PT60S",
+    width: 1920,
+    height: 1080,
+  },
   // Shown instead when site.showServices is false.
   portfolioTitle: "Full-stack developer building fast, reliable web apps.",
   portfolioSubtitle:

@@ -70,6 +70,20 @@ function seoFromContent(): Plugin {
           areaServed: ["Mumbai", "Navi Mumbai", "India"],
           founder: { "@id": `${url}#person` },
         });
+        if (hero.video.src) {
+          graph.push({
+            "@type": "VideoObject",
+            "@id": `${url}#intro-video`,
+            name: hero.video.title,
+            description: hero.video.description,
+            thumbnailUrl: `${site.url}${imageUrl(hero.video.poster, images)}`,
+            contentUrl: `${site.url}${hero.video.src}`,
+            uploadDate: hero.video.uploadDate,
+            duration: hero.video.duration,
+            inLanguage: "en-IN",
+            publisher: { "@id": `${url}#person` },
+          });
+        }
       }
       const jsonLd = JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replace(
         /</g,
