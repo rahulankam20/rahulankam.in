@@ -1,4 +1,4 @@
-import { Check, Clock, Globe, Sparkles } from "lucide-react";
+import { Clock, Globe, Sparkles } from "lucide-react";
 import { services } from "../content";
 import { contactHref } from "../lib/links";
 import { revealDelay } from "../lib/motion";
@@ -33,12 +33,9 @@ function PackageBody({ pkg }: { pkg: Package }) {
           <Clock className="h-4 w-4" aria-hidden /> {pkg.delivery}
         </p>
       </div>
-      <ul className="mt-6 space-y-2.5 text-sm">
+      <ul className="tick-list tick-list-plain mt-6 space-y-2.5 text-sm">
         {pkg.features.map((feature) => (
-          <li key={feature} className="flex gap-2.5">
-            <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
-            <span>{feature}</span>
-          </li>
+          <li key={feature}>{feature}</li>
         ))}
       </ul>
       <div className="mt-auto pt-8">

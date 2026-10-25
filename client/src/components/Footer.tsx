@@ -10,7 +10,7 @@ export default function Footer() {
         className="container-page flex flex-col gap-5 py-10 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
       >
         <p>
-          © <span suppressHydrationWarning>{new Date().getFullYear()}</span> {site.name} · {footer.tagline}
+          © {new Date().getFullYear()} {site.name} · {footer.tagline}
         </p>
         <div className="flex items-center gap-5">
           {site.linkedin && (

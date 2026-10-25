@@ -2,7 +2,7 @@
 
 The website of Rahul Ankam, a full-stack developer in Mumbai. It sells websites and online stores to businesses, and shows Rahul's work and experience.
 
-Built with React, Vite and Tailwind CSS. The page is pre-rendered to plain HTML at build time, so it loads fast on phones and every search engine can read it. Hosted free on Cloudflare, as a Worker that only serves the built files: see [DEPLOY.md](DEPLOY.md).
+Built with Vite and Tailwind CSS. The components are written for React but run on [Preact](https://preactjs.com), which does the same job in 4 KB instead of React's 45 KB (aliases in `vite.config.ts`). The page is pre-rendered to plain HTML at build time, with its CSS inside, so it paints on a phone as soon as the HTML arrives and every search engine can read it. Hosted free on Cloudflare, as a Worker that only serves the built files: see [DEPLOY.md](DEPLOY.md).
 
 ## Changing what the site says
 
@@ -23,6 +23,9 @@ Common edits:
 
 Images live in `client/public/images/` (WebP, 15 to 90 KB each). The link-preview image is `client/public/og-image.jpg` (1200×630; keep it under 300 KB for WhatsApp).
 
+- **Smaller copies for phones:** each screenshot has a smaller copy beside it, `name-<width>.webp`: 683 px wide for computer screenshots, 260 px for phone screenshots, 72 px for the logo. The page offers them in a `srcset`, so a phone downloads a size close to what it shows. After adding an image, run `node scripts/screenshots.mjs --variants` (with Playwright installed, below) to make its copies.
+- **Versioned addresses:** the build adds `?v=<hash of the file>` to every image address (`client/src/lib/images.ts`), so `_headers` can let browsers keep images for a year and a changed image still shows at once.
+
 ### Screenshots of the demo websites
 
 The dental and restaurant screenshots are taken by `scripts/screenshots.mjs`, at the sizes the page shows them. It fixes the clock (so "Open now" badges and booking dates look right) and turns animations off. Playwright isn't a dependency here, so install it just for the run:
@@ -33,7 +36,7 @@ npx playwright install chromium     # once per computer
 node scripts/screenshots.mjs restaurant path/to/site-starter/dist/demo-restaurant
 ```
 
-The second argument is the demo's built folder (`npm run build -- <site id>` in the site-starter repo) or its address once it's online. The script overwrites the project's five images; the file names and alt texts are in `content.ts`.
+The second argument is the demo's built folder (`npm run build -- <site id>` in the site-starter repo) or its address once it's online. The script overwrites the project's five images and their smaller copies; the file names and alt texts are in `content.ts`.
 
 ## Running it locally
 
@@ -49,7 +52,7 @@ npm run preview   # serve dist/ at http://localhost:4173
 
 ## How it fits together
 
-- `client/index.html`: the page shell. `<!-- seo -->` is filled in by the plugin in `vite.config.ts`; `<!--app-html-->` by `scripts/prerender.mjs`.
+- `client/index.html`: the page shell. `<!-- seo -->` is filled in by the plugin in `vite.config.ts`; `<!--app-html-->` by `scripts/prerender.mjs`, which also moves the stylesheet into the page.
 - `client/src/sections/`: one file per page section, in page order in `App.tsx`.
 - `client/src/components/`: navbar, footer, buttons, theme switch, floating WhatsApp button.
 - `client/public/`: copied as-is, including `_headers` (Cloudflare security and caching headers), `404.html`, `robots.txt` and `sitemap.xml`.

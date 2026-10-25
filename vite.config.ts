@@ -1,10 +1,22 @@
 import { defineConfig, type Plugin } from "vite";
-import react from "@vitejs/plugin-react";
+import { createHash } from "node:crypto";
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { about, hero, seo, site } from "./client/src/content";
+import { imageSizes, imageSrcSet, imageUrl, type ImageIndex } from "./client/src/lib/images";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+
+// Every file in client/public/images with a short hash of its contents, for
+// versioned image addresses and srcsets (client/src/lib/images.ts).
+const imageDir = path.resolve(here, "client/public/images");
+const images: ImageIndex = Object.fromEntries(
+  fs
+    .readdirSync(imageDir)
+    .sort()
+    .map((name) => [name, createHash("sha256").update(fs.readFileSync(path.join(imageDir, name))).digest("hex").slice(0, 10)]),
+);
 
 const escapeHtml = (value: string) =>
   value
@@ -81,7 +93,7 @@ function seoFromContent(): Plugin {
         `<meta name="twitter:title" content="${escapeHtml(title)}" />`,
         `<meta name="twitter:description" content="${escapeHtml(description)}" />`,
         `<meta name="twitter:image" content="${image}" />`,
-        `<link rel="preload" as="image" href="${hero.image.src}" fetchpriority="high" />`,
+        `<link rel="preload" as="image" href="${imageUrl(hero.image.src, images)}" imagesrcset="${imageSrcSet(hero.image.src, hero.image.width, images) ?? ""}" imagesizes="${imageSizes.heroScreen}" fetchpriority="high" />`,
         `<script type="application/ld+json">${jsonLd}</script>`,
       ];
       return html.replace("<!-- seo -->", tags.join("\n    "));
@@ -91,7 +103,22 @@ function seoFromContent(): Plugin {
 
 export default defineConfig(({ isSsrBuild }) => ({
   root: path.resolve(here, "client"),
-  plugins: [react(), seoFromContent()],
+  plugins: [seoFromContent()],
+  define: { __IMAGES__: JSON.stringify(images) },
+  resolve: {
+    // The components are written for React but run on Preact, which does the
+    // same job in 4 KB instead of React's 45 KB: much less for a phone to load.
+    alias: [
+      { find: /^react-dom\/server$/, replacement: "preact/compat/server" },
+      { find: /^react-dom\/client$/, replacement: "preact/compat/client" },
+      { find: /^react\/jsx-runtime$/, replacement: "preact/compat/jsx-runtime" },
+      { find: /^react\/jsx-dev-runtime$/, replacement: "preact/compat/jsx-dev-runtime" },
+      { find: /^react(-dom)?$/, replacement: "preact/compat" },
+    ],
+  },
+  // Bundle the icon libraries into the build-time renderer as well, so their
+  // own React imports become Preact too.
+  ssr: { noExternal: ["lucide-react", "react-icons"] },
   build: {
     outDir: path.resolve(here, isSsrBuild ? "dist-ssr" : "dist"),
     emptyOutDir: true,

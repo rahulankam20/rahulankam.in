@@ -22,6 +22,8 @@
     --grad-via: 28 95% 45%;
     --grad-to: 345 75% 47%;
     --glow: 31 100% 60%;
+    /* The tick before list items (.tick-list), used as a mask. */
+    --tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
     color-scheme: light;
   }
 
@@ -88,14 +90,74 @@
     @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
   }
 
-  /* Orange-to-pink text, slowly panning. */
+  /* Orange-to-pink text. It doesn't move: a moving background is repainted
+     every frame, which costs a phone's battery and speed. */
   .text-gradient {
     background: linear-gradient(100deg, hsl(var(--grad-from)), hsl(var(--grad-via)) 45%, hsl(var(--grad-to)));
-    background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    animation: gradient-pan 6s ease-in-out infinite alternate;
+  }
+
+  /* A tick in a soft circle before each item, drawn in CSS rather than with
+     icon elements, to keep the page small. .tick-list-plain: the tick alone. */
+  .tick-list > li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .tick-list > li::before,
+  .tick-list > li::after {
+    content: "";
+    position: absolute;
+    left: 0;
+  }
+  .tick-list > li::before {
+    top: 0.125rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: hsl(var(--primary) / 0.2);
+  }
+  .tick-list > li::after {
+    top: 0.3125rem;
+    left: 0.1875rem;
+    width: 0.875rem;
+    height: 0.875rem;
+    background: hsl(var(--accent));
+    -webkit-mask: var(--tick) center / contain no-repeat;
+    mask: var(--tick) center / contain no-repeat;
+  }
+  .tick-list-tight > li {
+    padding-left: 1.75rem;
+  }
+  .tick-list-tight > li::before {
+    top: 0;
+  }
+  .tick-list-tight > li::after {
+    top: 0.1875rem;
+  }
+  .tick-list-plain > li {
+    padding-left: 1.625rem;
+  }
+  .tick-list-plain > li::before {
+    display: none;
+  }
+  .tick-list-plain > li::after {
+    top: 0.125rem;
+    left: 0;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* The four-pointed star between the strip's items, drawn in CSS: no font on
+     a phone has to be searched for a star character. */
+  .marquee-item::after {
+    content: "";
+    flex: none;
+    width: 0.8rem;
+    height: 0.8rem;
+    background: linear-gradient(100deg, hsl(var(--grad-from)), hsl(var(--grad-via)) 45%, hsl(var(--grad-to)));
+    clip-path: polygon(50% 0%, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0% 50%, 38% 38%);
   }
 
   /* Soft dotted backdrop that fades out towards the edges. */
@@ -164,17 +226,31 @@
     animation: shine-sweep 4.5s ease-in-out 2.4s infinite;
   }
 
-  /* Animated gradient frame for the recommended package. */
+  /* Animated gradient frame for the recommended package: a conic gradient
+     turns behind the card. Only its transform animates, which the GPU does
+     without repainting. */
   .glow-border {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .glow-border::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: 50%;
+    top: 50%;
+    width: 250%;
+    aspect-ratio: 1;
     background: conic-gradient(
-      from var(--angle),
       hsl(var(--primary) / 0.2),
       hsl(var(--primary)) 18%,
       hsl(var(--grad-to)) 32%,
       hsl(var(--primary) / 0.2) 48%,
       hsl(var(--primary) / 0.2)
     );
-    animation: spin-angle 5s linear infinite;
+    transform: translate(-50%, -50%);
+    animation: glow-spin 5s linear infinite;
   }
 
   .marquee {
@@ -204,13 +280,14 @@
     animation: ping-slow 2.6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
   }
 
-  /* On-load animations: pure CSS, so they start with the first paint. */
+  /* On-load animations: pure CSS, so they start with the first paint. The
+     whole hero is in place about a second after it first appears. */
   .load-in {
-    animation: load-in 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: load-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
     animation-delay: var(--d, 0ms);
   }
   .load-zoom {
-    animation: load-zoom 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: load-zoom 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
     animation-delay: var(--d, 0ms);
   }
   .nav-in {
@@ -230,8 +307,8 @@
   }
   .word-in {
     display: inline-block;
-    animation: word-up 0.9s cubic-bezier(0.2, 0.75, 0.2, 1) both;
-    animation-delay: calc(var(--i, 0) * 70ms + 150ms);
+    animation: word-up 0.7s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 40ms + 80ms);
   }
 
   details[open] > .faq-answer {
@@ -275,22 +352,6 @@
   }
 }
 
-/* Lets the conic gradient in .glow-border rotate smoothly. */
-@property --angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes gradient-pan {
-  from {
-    background-position: 0% 50%;
-  }
-  to {
-    background-position: 100% 50%;
-  }
-}
-
 @keyframes blob-drift {
   0% {
     transform: translate3d(0, 0, 0) scale(1);
@@ -323,9 +384,9 @@
   }
 }
 
-@keyframes spin-angle {
+@keyframes glow-spin {
   to {
-    --angle: 360deg;
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }
 

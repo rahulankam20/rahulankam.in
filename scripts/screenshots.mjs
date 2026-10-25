@@ -1,6 +1,7 @@
 // Takes the screenshots of a demo website for the Work section, at the sizes
 // the page shows them (1366×854 for a computer, 390×844 for a phone), and
-// saves them as WebP in client/public/images/, replacing the old ones.
+// saves them as WebP in client/public/images/, replacing the old ones. Each
+// also gets a smaller copy (name-<width>.webp) for phones to download instead.
 //
 // Playwright isn't a dependency of this site, so install it just for the run:
 //
@@ -12,11 +13,16 @@
 // folder its build wrote (dist/<site id> in the site-starter repo), which this
 // script then serves itself.
 //
+//   node scripts/screenshots.mjs --variants
+//
+// makes any smaller copies still missing for the other images in that folder
+// (a new store screenshot, say).
+//
 // The clock is fixed, so "Open now" badges and booking dates come out the same
 // every time, and animations are off, so nothing is caught halfway in.
 
 import { createServer } from "node:http";
-import { readFile, stat, writeFile } from "node:fs/promises";
+import { readFile, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -26,6 +32,11 @@ const views = {
   desktop: { viewport: { width: 1366, height: 854 } },
   phone: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
 };
+
+// The smaller copies an image gets, by its width in pixels. The page offers
+// them in a srcset (client/src/lib/images.ts), so a phone downloads a size
+// close to what it shows.
+const smallerCopies = { 1366: [683], 390: [260], 96: [72] };
 
 // file: the name in client/public/images/ (content.ts lists the same names).
 // section: the id of the section to scroll to. click: elements to click first.
@@ -67,8 +78,9 @@ const projects = {
 
 const [name, site] = process.argv.slice(2);
 const project = projects[name];
-if (!project || !site) {
+if (name !== "--variants" && (!project || !site)) {
   console.error(`Usage: node scripts/screenshots.mjs <${Object.keys(projects).join("|")}> <address or built folder>`);
+  console.error("   or: node scripts/screenshots.mjs --variants");
   process.exit(1);
 }
 
@@ -80,35 +92,67 @@ try {
   process.exit(1);
 }
 
-const server = /^https?:/.test(site) ? null : await serve(site);
-const base = server ? server.base : site.replace(/\/$/, "");
 const browser = await chromium.launch();
 // A blank page for the WebP encoding, away from the demo's security headers.
 const encoder = await browser.newPage();
 
 try {
-  for (const shot of project.shots) {
-    const context = await browser.newContext({
-      ...views[shot.view],
-      deviceScaleFactor: 1,
-      reducedMotion: "reduce",
-      timezoneId: project.timeZone,
-      locale: project.locale,
-    });
-    const page = await context.newPage();
-    await page.clock.setFixedTime(new Date(project.time));
-    await page.goto(base + shot.path, { waitUntil: "networkidle" });
-    for (const selector of shot.click ?? []) await page.locator(selector).click();
-    if (shot.section) await scrollTo(page, shot.section);
-    await settle(page);
-    const webp = await toWebp(encoder, await page.screenshot());
-    await writeFile(path.join(outDir, `${shot.file}.webp`), webp);
-    console.log(`${shot.file}.webp  ${Math.round(webp.length / 1024)} KB`);
-    await context.close();
-  }
+  if (name === "--variants") await writeMissingCopies();
+  else await takeShots(project, site);
 } finally {
   await browser.close();
-  server?.close();
+}
+
+async function takeShots(project, site) {
+  const server = /^https?:/.test(site) ? null : await serve(site);
+  const base = server ? server.base : site.replace(/\/$/, "");
+  try {
+    for (const shot of project.shots) {
+      const context = await browser.newContext({
+        ...views[shot.view],
+        deviceScaleFactor: 1,
+        reducedMotion: "reduce",
+        timezoneId: project.timeZone,
+        locale: project.locale,
+      });
+      const page = await context.newPage();
+      await page.clock.setFixedTime(new Date(project.time));
+      await page.goto(base + shot.path, { waitUntil: "networkidle" });
+      for (const selector of shot.click ?? []) await page.locator(selector).click();
+      if (shot.section) await scrollTo(page, shot.section);
+      await settle(page);
+      const png = await page.screenshot();
+      await save(`${shot.file}.webp`, await toWebp(png));
+      for (const width of smallerCopies[views[shot.view].viewport.width] ?? []) {
+        await save(`${shot.file}-${width}.webp`, await toWebp(png, width));
+      }
+      await context.close();
+    }
+  } finally {
+    server?.close();
+  }
+}
+
+// Makes the smaller copies that don't exist yet, for every image in the folder.
+async function writeMissingCopies() {
+  const files = (await readdir(outDir)).filter((file) => file.endsWith(".webp"));
+  const isCopy = (file) => {
+    const match = file.match(/^(.+)-\d+\.webp$/);
+    return Boolean(match && files.includes(`${match[1]}.webp`));
+  };
+  for (const file of files.filter((file) => !isCopy(file))) {
+    const image = await readFile(path.join(outDir, file));
+    const { width } = await measure(image);
+    for (const copyWidth of smallerCopies[width] ?? []) {
+      const copy = file.replace(/\.webp$/, `-${copyWidth}.webp`);
+      if (!files.includes(copy)) await save(copy, await toWebp(image, copyWidth, "image/webp"));
+    }
+  }
+}
+
+async function save(file, data) {
+  await writeFile(path.join(outDir, file), data);
+  console.log(`${file}  ${Math.round(data.length / 1024)} KB`);
 }
 
 // Brings a section to the top of the screen, or just below the header if the
@@ -146,18 +190,34 @@ async function settle(page) {
   await page.waitForTimeout(300);
 }
 
-// Chromium encodes WebP itself, so no image library is needed.
-async function toWebp(page, png) {
-  const dataUrl = await page.evaluate(async (base64) => {
-    const image = new Image();
-    image.src = `data:image/png;base64,${base64}`;
-    await image.decode();
-    const canvas = document.createElement("canvas");
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight;
-    canvas.getContext("2d").drawImage(image, 0, 0);
-    return canvas.toDataURL("image/webp", 0.8);
-  }, png.toString("base64"));
+async function measure(image) {
+  return encoder.evaluate(async (base64) => {
+    const picture = new Image();
+    picture.src = `data:image/webp;base64,${base64}`;
+    await picture.decode();
+    return { width: picture.naturalWidth, height: picture.naturalHeight };
+  }, image.toString("base64"));
+}
+
+// Chromium encodes WebP itself, so no image library is needed. With a width,
+// the image is scaled down to it first, smoothly.
+async function toWebp(image, width, type = "image/png") {
+  const dataUrl = await encoder.evaluate(
+    async ({ base64, width, type }) => {
+      const picture = new Image();
+      picture.src = `data:${type};base64,${base64}`;
+      await picture.decode();
+      const scale = width ? width / picture.naturalWidth : 1;
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(picture.naturalWidth * scale);
+      canvas.height = Math.round(picture.naturalHeight * scale);
+      const context = canvas.getContext("2d");
+      context.imageSmoothingQuality = "high";
+      context.drawImage(picture, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL("image/webp", 0.8);
+    },
+    { base64: image.toString("base64"), width, type },
+  );
   if (!dataUrl.startsWith("data:image/webp")) throw new Error("This browser can't encode WebP");
   return Buffer.from(dataUrl.slice(dataUrl.indexOf(",") + 1), "base64");
 }

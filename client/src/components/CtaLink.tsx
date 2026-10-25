@@ -4,7 +4,7 @@ const variants = {
   primary:
     "btn-shine bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/35",
   secondary:
-    "border border-border bg-card/80 text-foreground backdrop-blur hover:-translate-y-0.5 hover:border-primary/60 hover:bg-card",
+    "border border-border bg-card/90 text-foreground hover:-translate-y-0.5 hover:border-primary/60 hover:bg-card",
   whatsapp:
     "btn-shine bg-whatsapp text-whatsapp-foreground shadow-lg shadow-whatsapp/25 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-whatsapp/35",
 };

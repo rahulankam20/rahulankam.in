@@ -1,12 +1,13 @@
-import { ArrowUpRight, Check } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { projects, site, work, type Project, type Shot } from "../content";
+import { imageSizes, imageSrcSet, imageUrl } from "../lib/images";
 import { contactHref, isWhatsapp } from "../lib/links";
 import { CountUp, revealDelay } from "../lib/motion";
 import CtaLink from "../components/CtaLink";
 import SectionHeading from "../components/SectionHeading";
 
-function Screenshot({ shot, index, className = "" }: { shot: Shot; index: number; className?: string }) {
+function Screenshot({ shot, index, sizes, className = "" }: { shot: Shot; index: number; sizes: string; className?: string }) {
   return (
     <figure
       data-reveal="zoom"
@@ -14,7 +15,9 @@ function Screenshot({ shot, index, className = "" }: { shot: Shot; index: number
       className={`group overflow-hidden rounded-xl border border-border bg-muted shadow-sm ${className}`}
     >
       <img
-        src={shot.src}
+        src={imageUrl(shot.src)}
+        srcSet={imageSrcSet(shot.src, shot.width)}
+        sizes={sizes}
         alt={shot.alt}
         width={shot.width}
         height={shot.height}
@@ -47,13 +50,10 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
           <p className="text-sm font-semibold uppercase tracking-wider text-accent">{project.kicker}</p>
           <h3 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{project.title}</h3>
           <p className="mt-4 leading-relaxed text-muted-foreground">{project.summary}</p>
-          <ul className="mt-6 space-y-3">
+          <ul className="tick-list mt-6 space-y-3">
             {project.highlights.map((item, index) => (
-              <li key={item} data-reveal={flip ? "right" : "left"} style={revealDelay(index, 70)} className="flex gap-3">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/20">
-                  <Check className="h-3.5 w-3.5 text-accent" aria-hidden />
-                </span>
-                <span>{item}</span>
+              <li key={item} data-reveal={flip ? "right" : "left"} style={revealDelay(index, 70)}>
+                {item}
               </li>
             ))}
           </ul>
@@ -90,9 +90,9 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
         </div>
 
         <div className={`grid grid-cols-2 content-start gap-3 sm:gap-4 ${flip ? "lg:order-first" : ""}`}>
-          <Screenshot shot={wide} index={0} className="col-span-2" />
+          <Screenshot shot={wide} index={0} sizes={imageSizes.workWide} className="col-span-2" />
           {pair.map((shot, index) => (
-            <Screenshot key={shot.src} shot={shot} index={index + 1} />
+            <Screenshot key={shot.src} shot={shot} index={index + 1} sizes={imageSizes.workHalf} />
           ))}
           <div className="col-span-2 flex justify-center gap-4 pt-2 sm:gap-6">
             {project.phoneImages.map((shot, index) => (
@@ -101,7 +101,9 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
                   className={`${index === 0 ? "float-slow" : "float-slower"} overflow-hidden rounded-[1.2rem] border-[5px] border-neutral-900 bg-muted shadow-xl`}
                 >
                   <img
-                    src={shot.src}
+                    src={imageUrl(shot.src)}
+                    srcSet={imageSrcSet(shot.src, shot.width)}
+                    sizes={imageSizes.workPhone}
                     alt={shot.alt}
                     width={shot.width}
                     height={shot.height}

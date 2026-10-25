@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Download, Menu, X } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 import { nav, site } from "../content";
+import { imageSizes, imageSrcSet, imageUrl } from "../lib/images";
 import { whatsappLink } from "../lib/links";
 import ThemeToggle from "./ThemeToggle";
 
@@ -59,7 +60,7 @@ export default function Navbar() {
       className={`nav-in sticky top-0 z-40 border-b transition-[background-color,box-shadow,border-color] duration-300 ${
         scrolled
           ? "border-border/70 bg-background/80 shadow-[0_10px_30px_-14px_rgb(0_0_0/0.25)] backdrop-blur-md"
-          : "border-transparent bg-background/40 backdrop-blur-sm"
+          : "border-transparent bg-background/60"
       }`}
     >
       <div
@@ -70,7 +71,9 @@ export default function Navbar() {
       <div className="container-page flex h-16 items-center justify-between gap-4">
         <a href="#top" onClick={close} className="group flex items-center gap-2.5 font-display text-lg font-bold tracking-tight">
           <img
-            src="/images/logo-96.webp"
+            src={imageUrl("/images/logo-96.webp")}
+            srcSet={imageSrcSet("/images/logo-96.webp", 96)}
+            sizes={imageSizes.logo}
             alt=""
             width={36}
             height={36}
