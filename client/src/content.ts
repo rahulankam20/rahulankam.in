@@ -137,7 +137,7 @@ export const projects: Project[] = [
       { value: 0, label: "items oversold under that load" },
       { value: 8, label: "automatic order emails" },
     ],
-    note: "Shown here as a demo brand and live as SOLEVAULT: the same code, rebranded. Payments on the live demo run in Cashfree's test mode, so nothing is charged. The code is private.",
+    note: "The screenshots and the live demo show the same store under two different brands: that's the rebranding at work. Payments on the live demo run in Cashfree's test mode, so nothing is charged. The code is private.",
     cta: {
       label: "Get a store like this",
       message: "Hi Rahul, I saw your online store demo. I'd like a store like it for my business.",
@@ -203,7 +203,7 @@ export const projects: Project[] = [
     kicker: "Restaurant website · Food and catering",
     title: "Restaurant website with table bookings and catering quotes",
     summary:
-      "A demo website for Saffron & Curry Leaf, a fictional North and South Indian restaurant and caterer in Vashi, Navi Mumbai. Guests browse the menu and order on Swiggy or Zomato, or ask for a table or a catering quote, which reaches the restaurant by email.",
+      "A demo website for a fictional North and South Indian restaurant and caterer in Vashi, Navi Mumbai. Guests browse the menu and order on Swiggy or Zomato, or ask for a table or a catering quote, which reaches the restaurant by email.",
     highlights: [
       "A 44-dish menu that filters by diet and spice, with FSSAI allergens on every dish",
       "Swiggy and Zomato buttons, plus table requests and catering quotes emailed to the restaurant",
@@ -226,11 +226,11 @@ export const projects: Project[] = [
       message: "Hi Rahul, I saw your restaurant website. I'd like a website like it for my business.",
       servicesOnly: true,
     },
-    liveUrl: "https://restuarant.rahulankam.in/",
+    liveUrl: "https://restaurant.rahulankam.in/",
     images: [
       {
         src: "/images/restaurant-home-desktop.webp",
-        alt: "Saffron & Curry Leaf's home page: a thali in an arched frame, an \"Open now\" badge, and buttons to order on Swiggy or Zomato, book a table or ask for a catering quote",
+        alt: "The restaurant's home page: a thali in an arched frame, an \"Open now\" badge, and buttons to order on Swiggy or Zomato, book a table or ask for a catering quote",
         width: 1366,
         height: 854,
       },
