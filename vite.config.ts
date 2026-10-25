@@ -43,6 +43,8 @@ function seoFromContent(): Plugin {
         addressRegion: site.region,
         addressCountry: "IN",
       };
+      // The hero's big image: the video's opening frame, or the store screenshot without the services.
+      const heroImage = site.showServices && hero.video.src ? { src: hero.video.poster, width: hero.video.width } : hero.image;
       const graph: object[] = [
         {
           "@type": "Person",
@@ -107,7 +109,7 @@ function seoFromContent(): Plugin {
         `<meta name="twitter:title" content="${escapeHtml(title)}" />`,
         `<meta name="twitter:description" content="${escapeHtml(description)}" />`,
         `<meta name="twitter:image" content="${image}" />`,
-        `<link rel="preload" as="image" href="${imageUrl(hero.image.src, images)}" imagesrcset="${imageSrcSet(hero.image.src, hero.image.width, images) ?? ""}" imagesizes="${imageSizes.heroScreen}" fetchpriority="high" />`,
+        `<link rel="preload" as="image" href="${imageUrl(heroImage.src, images)}" imagesrcset="${imageSrcSet(heroImage.src, heroImage.width, images) ?? ""}" imagesizes="${imageSizes.heroScreen}" fetchpriority="high" />`,
         `<script type="application/ld+json">${jsonLd}</script>`,
       ];
       return html.replace("<!-- seo -->", tags.join("\n    "));

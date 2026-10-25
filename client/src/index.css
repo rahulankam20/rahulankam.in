@@ -266,6 +266,16 @@
     animation-play-state: paused;
   }
 
+  /* The hero's play button sends out a soft ring, so the eye lands on it. */
+  .play-pulse::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: hsl(var(--primary));
+    animation: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
   /* A dot that sends out a soft ring, for "live" status. */
   .live-dot::after {
     content: "";

@@ -2,14 +2,15 @@ import { useEffect, useState, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 import { Play, X } from "lucide-react";
 import { hero, site } from "../content";
-import { imageUrl } from "../lib/images";
+import { imageSizes, imageSrcSet, imageUrl } from "../lib/images";
 
 /**
- * The "Watch the intro" button and its player. The video element exists only
- * while the player is open, so the page loads nothing for it until the button
- * is pressed. Without JavaScript the button is a plain link to the file.
- * The player is rendered on the body: the hero's entrance animation leaves a
- * transform on the button row, which would otherwise hold a fixed dialog in place.
+ * The hero's video card: the intro's opening frame with a pulsing play button,
+ * and the player it opens. The video element exists only while the player is
+ * open, so the page loads nothing for it until the card is pressed. Without
+ * JavaScript the card is a plain link to the file. The player is rendered on
+ * the body: the hero's animations leave transforms on their elements, which
+ * would otherwise hold a fixed dialog in place.
  */
 export default function IntroVideo() {
   const video = hero.video;
@@ -41,12 +42,33 @@ export default function IntroVideo() {
       <a
         href={video.src}
         onClick={show}
-        className="group inline-flex items-center justify-center gap-2.5 rounded-xl border border-border bg-card/90 px-5 py-3 text-sm font-semibold text-foreground transition duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-card"
+        aria-label={`${video.label} (video, 1 minute)`}
+        className="group relative block overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/20"
       >
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/25 text-accent transition-transform duration-300 group-hover:scale-110">
-          <Play className="ml-0.5 h-3 w-3 fill-current" aria-hidden />
+        <img
+          src={imageUrl(video.poster)}
+          srcSet={imageSrcSet(video.poster, video.width)}
+          sizes={imageSizes.heroScreen}
+          alt={video.posterAlt}
+          width={video.width}
+          height={video.height}
+          fetchPriority="high"
+          className="block h-auto w-full transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+        />
+        <span className="absolute inset-y-0 left-0 flex w-[46%] flex-col items-start justify-center gap-2 p-[6%] sm:gap-3">
+          <span className="play-pulse relative flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/40 transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16 lg:h-[4.5rem] lg:w-[4.5rem]">
+            <Play
+              className="relative ml-0.5 h-5 w-5 fill-current sm:h-7 sm:w-7"
+              aria-hidden
+            />
+          </span>
+          <span className="font-display text-[clamp(0.95rem,3.3vw,1.6rem)] font-extrabold leading-[1.1] tracking-tight text-foreground lg:text-[1.55rem]">
+            {video.label}
+          </span>
+          <span className="text-[11px] font-medium leading-snug text-muted-foreground sm:text-sm">
+            {video.tagline}
+          </span>
         </span>
-        {video.label}
       </a>
 
       {open &&
