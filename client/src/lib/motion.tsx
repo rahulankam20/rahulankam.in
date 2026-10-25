@@ -60,7 +60,17 @@ export function useScrollReveal() {
  * A number that counts up from zero when it scrolls into view. The page is
  * rendered with the final number, so it is right without JavaScript too.
  */
-export function CountUp({ value, suffix = "", className }: { value: number; suffix?: string; className?: string }) {
+export function CountUp({
+  value,
+  prefix = "",
+  suffix = "",
+  className,
+}: {
+  value: number;
+  prefix?: string;
+  suffix?: string;
+  className?: string;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   const [shown, setShown] = useState(value);
 
@@ -93,6 +103,7 @@ export function CountUp({ value, suffix = "", className }: { value: number; suff
 
   return (
     <span ref={ref} className={className}>
+      {prefix}
       {shown.toLocaleString("en-IN")}
       {suffix}
     </span>

@@ -13,13 +13,27 @@ Common edits:
 | To change | Edit in `content.ts` |
 | --- | --- |
 | Phone, WhatsApp, email | `site.phone`, `site.whatsapp` (digits with country code; empty hides WhatsApp), `site.email` |
+| LinkedIn and GitHub links | `site.linkedin`, `site.github` (empty hides the link; both are hidden for now, with the old addresses in a comment) |
 | Show the resume button | `site.resumeUrl` → `"/RAHUL_ANKAM_RESUME.pdf"` once that PDF is up to date |
 | Prices and packages | `services.packages` and `services.care` |
 | Turn off everything freelance | `site.showServices` → `false` (hides prices, services, process, FAQ and the floating WhatsApp button) |
 | Experience, education, skills | `about` |
-| A new project | `learningProjects.items`, or a new section modelled on `featured` |
+| A project in Work | `projects`: one card each, in page order. Each card has its own link to send to a client, such as `rahulankam.in/#work-dental` |
+| A demo's "View the live demo" button | that project's `liveUrl` (empty hides the button) |
 
-Images live in `client/public/images/` (WebP, about 30 KB each). The link-preview image is `client/public/og-image.jpg` (1200×630; keep it under 300 KB for WhatsApp).
+Images live in `client/public/images/` (WebP, 15 to 90 KB each). The link-preview image is `client/public/og-image.jpg` (1200×630; keep it under 300 KB for WhatsApp).
+
+### Screenshots of the demo websites
+
+The dental and restaurant screenshots are taken by `scripts/screenshots.mjs`, at the sizes the page shows them. It fixes the clock (so "Open now" badges and booking dates look right) and turns animations off. Playwright isn't a dependency here, so install it just for the run:
+
+```bash
+npm install --no-save playwright@1.63.0
+npx playwright install chromium     # once per computer
+node scripts/screenshots.mjs restaurant path/to/site-starter/dist/demo-restaurant
+```
+
+The second argument is the demo's built folder (`npm run build -- <site id>` in the site-starter repo) or its address once it's online. The script overwrites the project's five images; the file names and alt texts are in `content.ts`.
 
 ## Running it locally
 

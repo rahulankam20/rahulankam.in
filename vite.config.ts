@@ -2,7 +2,7 @@ import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { about, featured, seo, site } from "./client/src/content";
+import { about, hero, seo, site } from "./client/src/content";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
@@ -24,6 +24,7 @@ function seoFromContent(): Plugin {
       const url = `${site.url}/`;
       const image = `${site.url}${seo.image}`;
       const job = about.experience[0];
+      const sameAs = [site.linkedin, site.github].filter(Boolean);
       const address = {
         "@type": "PostalAddress",
         addressLocality: site.locality,
@@ -40,7 +41,7 @@ function seoFromContent(): Plugin {
           worksFor: { "@type": "Organization", name: job.org },
           address,
           alumniOf: { "@type": "CollegeOrUniversity", name: "Terna Engineering College" },
-          sameAs: [site.linkedin, site.github],
+          ...(sameAs.length ? { sameAs } : {}),
         },
       ];
       if (site.showServices) {
@@ -80,7 +81,7 @@ function seoFromContent(): Plugin {
         `<meta name="twitter:title" content="${escapeHtml(title)}" />`,
         `<meta name="twitter:description" content="${escapeHtml(description)}" />`,
         `<meta name="twitter:image" content="${image}" />`,
-        `<link rel="preload" as="image" href="${featured.images[0].src}" fetchpriority="high" />`,
+        `<link rel="preload" as="image" href="${hero.image.src}" fetchpriority="high" />`,
         `<script type="application/ld+json">${jsonLd}</script>`,
       ];
       return html.replace("<!-- seo -->", tags.join("\n    "));

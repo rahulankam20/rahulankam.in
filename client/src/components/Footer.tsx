@@ -13,12 +13,16 @@ export default function Footer() {
           © <span suppressHydrationWarning>{new Date().getFullYear()}</span> {site.name} · {footer.tagline}
         </p>
         <div className="flex items-center gap-5">
-          <a href={site.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 transition hover:-translate-y-0.5 hover:text-foreground">
-            <FaLinkedin aria-hidden /> LinkedIn
-          </a>
-          <a href={site.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 transition hover:-translate-y-0.5 hover:text-foreground">
-            <FaGithub aria-hidden /> GitHub
-          </a>
+          {site.linkedin && (
+            <a href={site.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 transition hover:-translate-y-0.5 hover:text-foreground">
+              <FaLinkedin aria-hidden /> LinkedIn
+            </a>
+          )}
+          {site.github && (
+            <a href={site.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 transition hover:-translate-y-0.5 hover:text-foreground">
+              <FaGithub aria-hidden /> GitHub
+            </a>
+          )}
           <a href={`mailto:${site.email}`} className="inline-flex items-center gap-1.5 transition hover:-translate-y-0.5 hover:text-foreground">
             <Mail className="h-4 w-4" aria-hidden /> Email
           </a>

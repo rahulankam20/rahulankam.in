@@ -1,7 +1,7 @@
 import { Fragment, type CSSProperties } from "react";
 import { ArrowRight, Check, IndianRupee, Receipt } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
-import { featured, hero, site } from "../content";
+import { hero, site } from "../content";
 import { contactHref, isWhatsapp } from "../lib/links";
 import { loadDelay, Tilt } from "../lib/motion";
 import CtaLink from "../components/CtaLink";
@@ -12,8 +12,8 @@ export default function Hero() {
   const services = site.showServices;
   const primaryHref = services ? contactHref() : "#contact";
   const words = (services ? hero.title : hero.portfolioTitle).split(" ");
-  const desktop = featured.images[0];
-  const phone = featured.phoneImages[1];
+  const desktop = hero.image;
+  const phone = hero.phoneImage;
 
   return (
     <section id="top" className="relative isolate overflow-hidden">

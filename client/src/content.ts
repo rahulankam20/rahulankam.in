@@ -17,8 +17,11 @@ export const site = {
   whatsapp: "918425094452",
   whatsappMessage:
     "Hi Rahul, I saw your website. I'd like a free preview of a website for my business.",
-  linkedin: "https://www.linkedin.com/in/rahul-ankam/",
-  github: "https://github.com/rahulankam20",
+  // Empty hides the link everywhere (contact, footer, search data). Hidden
+  // until the profiles are ready; they were:
+  // "https://www.linkedin.com/in/rahul-ankam/" and "https://github.com/rahulankam20".
+  linkedin: "",
+  github: "",
   // Set to "/RAHUL_ANKAM_RESUME.pdf" once that PDF includes MKCL; empty hides the Resume button.
   resumeUrl: "",
   // false turns the site into a plain developer portfolio: no prices, services,
@@ -57,6 +60,9 @@ export const hero = {
   points: ["Free preview in 48 hours", "Pay only if you like it", "Live in about a week"],
   primaryCta: "Get a free preview",
   secondaryCta: "See my work",
+  // The screenshots beside the title: the online store on a computer and a phone.
+  image: { src: "/images/store-home-desktop.webp", alt: "Store home page with a bold hero and the store's own sneaker artwork", width: 1366, height: 854 },
+  phoneImage: { src: "/images/store-product-mobile.webp", alt: "Product page on a phone", width: 390, height: 844 },
   // Shown instead when site.showServices is false.
   portfolioTitle: "Full-stack developer building fast, reliable web apps.",
   portfolioSubtitle:
@@ -77,78 +83,166 @@ export const marquee = [
   "Care plans",
 ];
 
-export const featured = {
-  kicker: "Featured project · E-commerce",
-  title: "Online store for footwear and fashion brands",
-  summary:
-    "A white-label online store built for Indian sellers. Customers pick a size and pay by UPI, card or cash on delivery. The owner runs products, stock and orders from an admin panel.",
-  highlights: [
-    "UPI, cards and netbanking through Cashfree, plus cash on delivery",
-    "Stock per size, cart, wishlist and order-status emails",
-    "GST invoices and India's e-commerce rules built in",
-    "Admin panel with two-step sign-in, and encrypted nightly backups",
-    "Rebranded for a new brand in about a day: name, logo, colours and text",
-    "300+ automated tests and a 200-shopper load test",
-  ],
-  stack: ["React", "TypeScript", "Node.js", "Express", "PostgreSQL", "Docker", "Cashfree"],
-  // Count up when they scroll into view. All measured on the store itself.
-  stats: [
-    { value: 300, suffix: "+", label: "automated tests" },
-    { value: 200, suffix: "", label: "shoppers at once in the load test" },
-    { value: 0, suffix: "", label: "items oversold under that load" },
-    { value: 8, suffix: "", label: "automatic order emails" },
-  ],
-  note: "The demo uses fictional products and simulated payments. The code is private; a live demo is available on request.",
-  demoCta: "Ask for a live demo",
-  demoMessage: "Hi Rahul, I'd like a live demo of your online store.",
-  images: [
-    { src: "/images/store-home-desktop.webp", alt: "Store home page with a bold hero and the store's own sneaker artwork", width: 1366, height: 854 },
-    { src: "/images/store-shop-desktop.webp", alt: "Product grid with filters for brand, category, size and price", width: 1366, height: 854 },
-    { src: "/images/store-product-desktop.webp", alt: "Product page with price, discount and UK size selection", width: 1366, height: 854 },
-    { src: "/images/store-cart-desktop.webp", alt: "Cart with order summary and UPI checkout through Cashfree", width: 1366, height: 854 },
-  ],
-  phoneImages: [
-    { src: "/images/store-home-mobile.webp", alt: "Store home page on a phone", width: 390, height: 844 },
-    { src: "/images/store-product-mobile.webp", alt: "Product page on a phone", width: 390, height: 844 },
-  ],
+export const work = {
+  title: "Selected work",
+  intro:
+    "An online store, a clinic website in three languages, and a restaurant website with table bookings and catering quotes. Each is built to be rebranded, so your site starts from code that is already tested and working.",
 };
 
-export const learningProjects = {
-  title: "Earlier projects",
-  intro: "Projects from my learning years, each live online.",
-  items: [
-    {
-      title: "Stock trading platform (Zerodha clone)",
-      description: "A full-stack trading interface with portfolios and transactions stored in MongoDB.",
-      stack: ["MongoDB", "Express", "React", "Node.js", "Tailwind CSS"],
-      url: "https://zerodha-frontend-tau.vercel.app/",
-    },
-    {
-      title: "Real-time weather app",
-      description: "Live weather for cities worldwide, from an external API, in a clean Material UI dashboard.",
-      stack: ["React", "Material UI", "REST API"],
-      url: "https://real-time-weather-tau.vercel.app/",
-    },
-    {
-      title: "Gym website",
-      description: "A responsive website for a fitness business: memberships, amenities and a free-trial booking.",
-      stack: ["HTML", "CSS", "JavaScript"],
-      url: "https://rafitness.vercel.app/",
-    },
-    {
-      title: "Amazon landing page clone",
-      description: "A pixel-accurate copy of a large e-commerce home page, built to practise layout.",
-      stack: ["HTML", "CSS"],
-      url: "https://amazons-cloneweb.vercel.app/",
-    },
-    {
-      title: "Tic-tac-toe",
-      description: "A two-player browser game with win and draw detection.",
-      stack: ["HTML", "CSS", "JavaScript"],
-      url: "https://tic-tac-toe-game-zeta-one.vercel.app/",
-    },
-  ],
+// A screenshot, with its size in pixels so the page keeps its place while it loads.
+export type Shot = { src: string; alt: string; width: number; height: number };
+
+export type Project = {
+  // The card's own link, handy to send to a client: rahulankam.in/#work-<id>
+  id: string;
+  kicker: string;
+  title: string;
+  summary: string;
+  highlights: string[];
+  stack: string[];
+  // Count up when they scroll into view.
+  stats: { value: number; prefix?: string; suffix?: string; label: string }[];
+  note: string;
+  // A WhatsApp button; servicesOnly hides it when site.showServices is false.
+  cta: { label: string; message: string; servicesOnly?: boolean };
+  // The demo's address once it's online. Empty hides the "View the live demo" button.
+  liveUrl: string;
+  // The first is shown wide and the next two side by side, with the phones below.
+  // The two demo websites' screenshots come from scripts/screenshots.mjs.
+  images: [Shot, Shot, Shot];
+  phoneImages: [Shot, Shot];
 };
+
+// The Work section, one card per project, in this order.
+export const projects: Project[] = [
+  {
+    id: "store",
+    kicker: "Online store · E-commerce",
+    title: "Online store for footwear and fashion brands",
+    summary:
+      "A white-label online store built for Indian sellers. Customers pick a size and pay by UPI, card or cash on delivery. The owner runs products, stock and orders from an admin panel.",
+    highlights: [
+      "UPI, cards and netbanking through Cashfree, plus cash on delivery",
+      "Stock per size, cart, wishlist and order-status emails",
+      "GST invoices and India's e-commerce rules built in",
+      "Admin panel with two-step sign-in, and encrypted nightly backups",
+      "Rebranded for a new brand in about a day: name, logo, colours and text",
+      "300+ automated tests and a 200-shopper load test",
+    ],
+    stack: ["React", "TypeScript", "Node.js", "Express", "PostgreSQL", "Docker", "Cashfree"],
+    // All measured on the store itself.
+    stats: [
+      { value: 300, suffix: "+", label: "automated tests" },
+      { value: 200, label: "shoppers at once in the load test" },
+      { value: 0, label: "items oversold under that load" },
+      { value: 8, label: "automatic order emails" },
+    ],
+    note: "Shown here as a demo brand and live as SOLEVAULT: the same code, rebranded. Payments on the live demo run in Cashfree's test mode, so nothing is charged. The code is private.",
+    cta: {
+      label: "Get a store like this",
+      message: "Hi Rahul, I saw your online store demo. I'd like a store like it for my business.",
+      servicesOnly: true,
+    },
+    liveUrl: "https://shop.rahulankam.in/",
+    images: [
+      { src: "/images/store-shop-desktop.webp", alt: "Product grid with filters for brand, category, size and price", width: 1366, height: 854 },
+      { src: "/images/store-product-desktop.webp", alt: "Product page with price, discount and UK size selection", width: 1366, height: 854 },
+      { src: "/images/store-cart-desktop.webp", alt: "Cart with order summary and UPI checkout through Cashfree", width: 1366, height: 854 },
+    ],
+    phoneImages: [
+      { src: "/images/store-home-mobile.webp", alt: "Store home page on a phone", width: 390, height: 844 },
+      { src: "/images/store-product-mobile.webp", alt: "Product page on a phone", width: 390, height: 844 },
+    ],
+  },
+  {
+    id: "dental",
+    kicker: "Clinic website · Healthcare",
+    title: "Dental clinic website in English, Marathi and Hindi",
+    summary:
+      "A demo website for Mogra Dental Care, a fictional clinic in Nerul, Navi Mumbai. Patients see the timings, what each treatment involves and where its charges start, and book an appointment on WhatsApp in their own language.",
+    highlights: [
+      "English, Marathi and Hindi, with a one-tap language switch",
+      "Booking on WhatsApp: the patient picks a day and a time of day, and WhatsApp opens with the message ready",
+      "A live \"Open now\" badge, the week's timings and holiday closures",
+      "Each treatment explained, with its starting charge",
+      "Checked automatically for what dental advertising rules don't allow, such as discounts, testimonials and before-and-after photos",
+      "Call, WhatsApp and directions buttons always in reach on a phone",
+    ],
+    stack: ["Astro", "TypeScript", "Tailwind CSS", "Zod", "Cloudflare"],
+    // Scores from Google Lighthouse, on a phone, on every language's page.
+    stats: [
+      { value: 3, label: "languages: English, Marathi and Hindi" },
+      { value: 97, suffix: "+", label: "speed score on a phone (Google Lighthouse)" },
+      { value: 100, label: "accessibility score (Google Lighthouse)" },
+      { value: 0, prefix: "₹", label: "a month for hosting" },
+    ],
+    note: "Its dentists and charges are examples. On the demo, calls and WhatsApp messages come to me.",
+    cta: {
+      label: "Get a website like this",
+      message: "Hi Rahul, I saw your dental clinic website. I'd like a website like it for my business.",
+      servicesOnly: true,
+    },
+    liveUrl: "https://dental.rahulankam.in/",
+    images: [
+      {
+        src: "/images/dental-home-desktop.webp",
+        alt: "Mogra Dental Care's home page: a photo of the clinic, an \"Open now\" badge, a Book on WhatsApp button and the week's timings",
+        width: 1366,
+        height: 854,
+      },
+      { src: "/images/dental-treatments-desktop.webp", alt: "Treatments and charges: what each treatment involves, how long it takes and its starting charge", width: 1366, height: 854 },
+      { src: "/images/dental-booking-desktop.webp", alt: "Appointment form: the patient picks a treatment, a day and a time of day, then sends it on WhatsApp", width: 1366, height: 854 },
+    ],
+    phoneImages: [
+      { src: "/images/dental-home-mobile.webp", alt: "The clinic's home page on a phone, with call, WhatsApp and directions buttons along the bottom", width: 390, height: 844 },
+      { src: "/images/dental-marathi-mobile.webp", alt: "The same page in Marathi on a phone", width: 390, height: 844 },
+    ],
+  },
+  {
+    id: "restaurant",
+    kicker: "Restaurant website · Food and catering",
+    title: "Restaurant website with table bookings and catering quotes",
+    summary:
+      "A demo website for Saffron & Curry Leaf, a fictional North and South Indian restaurant and caterer in Vashi, Navi Mumbai. Guests browse the menu and order on Swiggy or Zomato, or ask for a table or a catering quote, which reaches the restaurant by email.",
+    highlights: [
+      "A 44-dish menu that filters by diet and spice, with FSSAI allergens on every dish",
+      "Swiggy and Zomato buttons, plus table requests and catering quotes emailed to the restaurant",
+      "Catering packages priced per plate, for 25 to 500 guests",
+      "Spam protection on both forms: Cloudflare Turnstile, a hidden trap field and a rate limit",
+      "A live \"Open now\" badge, with Sunday breakfast, late weekends and festival timings",
+      "Restaurant, menu and timings details that Google can read",
+    ],
+    stack: ["Astro", "TypeScript", "Tailwind CSS", "Zod", "Cloudflare Workers", "Turnstile", "Brevo"],
+    // Scores from Google Lighthouse, on a phone, on the home page.
+    stats: [
+      { value: 44, label: "dishes, each with its allergens" },
+      { value: 97, suffix: "+", label: "speed score on a phone (Google Lighthouse)" },
+      { value: 100, label: "accessibility score (Google Lighthouse)" },
+      { value: 0, label: "personal details kept by the website" },
+    ],
+    note: "Its menu, prices and story are examples. On the demo, calls and requests come to me.",
+    cta: {
+      label: "Get a website like this",
+      message: "Hi Rahul, I saw your restaurant website. I'd like a website like it for my business.",
+      servicesOnly: true,
+    },
+    liveUrl: "https://restuarant.rahulankam.in/",
+    images: [
+      {
+        src: "/images/restaurant-home-desktop.webp",
+        alt: "Saffron & Curry Leaf's home page: a thali in an arched frame, an \"Open now\" badge, and buttons to order on Swiggy or Zomato, book a table or ask for a catering quote",
+        width: 1366,
+        height: 854,
+      },
+      { src: "/images/restaurant-menu-desktop.webp", alt: "The menu filtered to Jain dishes, with diet labels, spice level and allergens on each dish", width: 1366, height: 854 },
+      { src: "/images/restaurant-catering-desktop.webp", alt: "Catering packages priced per plate, from a puja to a wedding, set as invitation cards", width: 1366, height: 854 },
+    ],
+    phoneImages: [
+      { src: "/images/restaurant-home-mobile.webp", alt: "The restaurant's home page on a phone", width: 390, height: 844 },
+      { src: "/images/restaurant-menu-mobile.webp", alt: "The menu's diet and spice filters on a phone", width: 390, height: 844 },
+    ],
+  },
+];
 
 export const services = {
   title: "What I can build for you",

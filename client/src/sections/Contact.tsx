@@ -101,14 +101,20 @@ export default function Contact() {
             </li>
           </ul>
 
-          <div className="mt-8 flex gap-3">
-            <a href={site.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted">
-              <FaLinkedin className="h-5 w-5" aria-hidden />
-            </a>
-            <a href={site.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted">
-              <FaGithub className="h-5 w-5" aria-hidden />
-            </a>
-          </div>
+          {(site.linkedin || site.github) && (
+            <div className="mt-8 flex gap-3">
+              {site.linkedin && (
+                <a href={site.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted">
+                  <FaLinkedin className="h-5 w-5" aria-hidden />
+                </a>
+              )}
+              {site.github && (
+                <a href={site.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card transition duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted">
+                  <FaGithub className="h-5 w-5" aria-hidden />
+                </a>
+              )}
+            </div>
+          )}
         </div>
 
         <form
