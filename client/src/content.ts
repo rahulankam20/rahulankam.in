@@ -247,7 +247,7 @@ export const projects: Project[] = [
     images: [
       {
         src: "/images/restaurant-home-desktop.webp",
-        alt: "The restaurant's home page: a thali in an arched frame, an \"Open now\" badge, and buttons to order on Swiggy or Zomato, book a table or ask for a catering quote",
+        alt: "The restaurant's home page: a thali floating among figures cut from Mughal paintings, an \"Open now\" badge, and buttons to order on Swiggy or Zomato, book a table or ask for a catering quote",
         width: 1366,
         height: 854,
       },
