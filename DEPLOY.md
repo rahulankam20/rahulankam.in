@@ -44,14 +44,14 @@ A Worker can only serve your domain if the domain's DNS is on Cloudflare.
 - **WhatsApp preview:** send `https://rahulankam.in` to yourself on WhatsApp. If an old preview sticks, send `https://rahulankam.in/?v=2`; WhatsApp caches previews per link.
 - **Contact form:** send yourself a test message. The EmailJS template should use `{{from_name}}`, `{{from_email}}` and `{{message}}`. The free plan allows 200 messages a month. Its domain allowlist is paid-only, so the form uses EmailJS's free bot blocking and rate limit; add reCAPTCHA in EmailJS if spam starts.
 
-## Email on your domain (Zoho Mail, later)
+## Email on your domain (Zoho Mail, done 2026-10-27)
 
 Zoho Mail's Forever Free plan is still offered in India (up to 5 users, 5 GB each, used in Zoho's web and phone apps; "available only in select data centers", so confirm at sign-up).
 
 1. Sign up with `rahulankam.in`.
 2. Zoho's admin console lists the records to add. Add exactly those in **Cloudflare DNS**: a verification TXT, three MX records (for the India data centre: `mx.zoho.in` 10, `mx2.zoho.in` 20, `mx3.zoho.in` 50), one SPF TXT and one DKIM TXT. Zoho has a one-click Cloudflare option too.
 3. Keep Cloudflare **Email Routing** turned off; it would take over the MX records.
-4. Once mail arrives, set `site.email` in `client/src/content.ts` to the new address and push.
+4. Once mail arrives, set `site.email` in `client/src/content.ts` to the new address and push. Done: the site shows `hello@rahulankam.in`, an alias of `rahul@rahulankam.in`.
 
 ## Updating the site later
 

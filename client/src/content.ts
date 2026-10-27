@@ -10,7 +10,7 @@ export const site = {
   location: "Mumbai, India",
   locality: "Mumbai",
   region: "Maharashtra",
-  email: "rahulankam1234@gmail.com", // switch to your Zoho address once it receives mail
+  email: "hello@rahulankam.in",
   phoneDisplay: "+91 84250 94452",
   phone: "+918425094452",
   // Country code + number, digits only. Leave empty to hide every WhatsApp button.
