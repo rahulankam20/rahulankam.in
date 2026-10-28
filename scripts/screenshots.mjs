@@ -13,6 +13,13 @@
 // folder its build wrote (dist/<site id> in the site-starter repo), which this
 // script then serves itself.
 //
+// Tableside needs its Worker, so give it a running copy, never the live demo
+// (the script fills the floor with an evening's orders first). In D:/shoe/tableside:
+//
+//   node scripts/preview.mjs --port 8799 --fresh --var UPI_VPA:cafesohrab@upi
+//
+// then here: node scripts/screenshots.mjs tableside http://127.0.0.1:8799
+//
 //   node scripts/screenshots.mjs --variants
 //
 // makes any smaller copies still missing for the other images in that folder
@@ -40,6 +47,8 @@ const smallerCopies = { 1366: [683], 390: [260], 96: [72] };
 
 // file: the name in client/public/images/ (content.ts lists the same names).
 // section: the id of the section to scroll to. click: elements to click first.
+// staff: sign in with this role and password first. storage: localStorage and
+// sessionStorage entries the page starts with (a guest's phone, a basket).
 const projects = {
   dental: {
     timeZone: "Asia/Kolkata",
@@ -72,6 +81,33 @@ const projects = {
       { file: "restaurant-catering-desktop", view: "desktop", path: "/catering/", section: "packages" },
       { file: "restaurant-home-mobile", view: "phone", path: "/" },
       { file: "restaurant-menu-mobile", view: "phone", path: "/menu/?diet=jain", section: "catalogue" },
+    ],
+  },
+  tableside: {
+    timeZone: "Asia/Kolkata",
+    locale: "en-IN",
+    // No fixed clock: the server stamps each order as it is seeded, and the
+    // screens show how long ago it came in.
+    prepare: seedTablesideEvening,
+    shots: [
+      { file: "tableside-home-desktop", view: "desktop", path: "/" },
+      { file: "tableside-floor-desktop", view: "desktop", path: "/staff/floor", staff: { role: "manager", password: "manager-1234" } },
+      { file: "tableside-kitchen-desktop", view: "desktop", path: "/kitchen", staff: { role: "kitchen", password: "kitchen-1234" } },
+      {
+        file: "tableside-menu-mobile",
+        view: "phone",
+        path: "/t/table-5/menu",
+        storage: {
+          local: { "tableside.device": "portfolio-meher-01", "tableside.name": "Meher" },
+          session: { "tableside.basket.table-5": JSON.stringify([{ itemId: "bun-maska", qty: 2 }, { itemId: "irani-chai", qty: 1 }]) },
+        },
+      },
+      {
+        file: "tableside-bill-mobile",
+        view: "phone",
+        path: "/t/table-5/tab",
+        storage: { local: { "tableside.device": "portfolio-meher-01", "tableside.name": "Meher" } },
+      },
     ],
   },
 };
@@ -107,6 +143,7 @@ async function takeShots(project, site) {
   const server = /^https?:/.test(site) ? null : await serve(site);
   const base = server ? server.base : site.replace(/\/$/, "");
   try {
+    await project.prepare?.(base);
     for (const shot of project.shots) {
       const context = await browser.newContext({
         ...views[shot.view],
@@ -115,8 +152,19 @@ async function takeShots(project, site) {
         timezoneId: project.timeZone,
         locale: project.locale,
       });
+      if (shot.staff) {
+        // The context's request client shares its cookies, so the page opens signed in.
+        const signIn = await context.request.post(`${base}/api/staff/login`, { data: shot.staff });
+        if (!signIn.ok()) throw new Error(`Staff sign-in failed: ${signIn.status()} ${await signIn.text()}`);
+      }
+      if (shot.storage) {
+        await context.addInitScript((storage) => {
+          for (const [key, value] of Object.entries(storage.local ?? {})) localStorage.setItem(key, value);
+          for (const [key, value] of Object.entries(storage.session ?? {})) sessionStorage.setItem(key, value);
+        }, shot.storage);
+      }
       const page = await context.newPage();
-      await page.clock.setFixedTime(new Date(project.time));
+      if (project.time) await page.clock.setFixedTime(new Date(project.time));
       await page.goto(base + shot.path, { waitUntil: "networkidle" });
       for (const selector of shot.click ?? []) await page.locator(selector).click();
       if (shot.section) await scrollTo(page, shot.section);
@@ -131,6 +179,80 @@ async function takeShots(project, site) {
   } finally {
     server?.close();
   }
+}
+
+// An evening at the demo café, through its own API: tables at every stage, so
+// the floor map and the kitchen screen look like a real service. Table 5 is
+// the one the phone shots show: Meher's round is served, and Kabir's phone has
+// just added a falooda to the same bill.
+async function seedTablesideEvening(base) {
+  const call = async (path, body, cookie) => {
+    const response = await fetch(base + path, {
+      method: "POST",
+      headers: { "content-type": "application/json", ...(cookie ? { cookie } : {}) },
+      body: JSON.stringify(body ?? {}),
+    });
+    if (!response.ok) throw new Error(`${path}: ${response.status} ${await response.text()}`);
+    return { body: await response.json(), cookie: response.headers.get("set-cookie")?.split(";")[0] };
+  };
+  const { cookie } = await call("/api/staff/login", { role: "manager", password: "manager-1234" });
+  const staff = (path) => call(path, {}, cookie);
+  const move = async (orderId, ...actions) => {
+    for (const action of actions) await staff(`/api/staff/orders/${orderId}/${action}`);
+  };
+  const guest = (table, deviceId, name) => call(`/api/t/${table}/join`, { deviceId, name });
+  const order = async (table, deviceId, items) => (await call(`/api/t/${table}/orders`, { deviceId, items })).body;
+
+  await guest("table-2", "portfolio-rohan-01", "Rohan");
+
+  await guest("table-1", "portfolio-anaya-01", "Anaya");
+  const t1 = await order("table-1", "portfolio-anaya-01", [{ itemId: "irani-chai", qty: 2 }, { itemId: "bun-maska", qty: 2 }]);
+  await move(t1.order.id, "accept", "cook", "ready");
+
+  await guest("table-12", "portfolio-dev-01", "Dev");
+  const t12 = await order("table-12", "portfolio-dev-01", [{ itemId: "mutton-cutlet", qty: 3 }, { itemId: "raspberry-soda", qty: 3 }]);
+  await move(t12.order.id, "accept", "cook", "ready", "serve");
+  await staff(`/api/staff/tabs/${t12.view.tab.id}/counter-payment`);
+
+  await guest("table-9", "portfolio-sana-01", "Sana");
+  const t9 = await order("table-9", "portfolio-sana-01", [{ itemId: "akuri", qty: 1 }, { itemId: "masala-chai", qty: 2 }]);
+  await move(t9.order.id, "accept", "cook", "ready", "serve");
+  const t9pay = await call("/api/t/table-9/payments", { deviceId: "portfolio-sana-01", method: "upi", tipPercent: 5 });
+  await call(`/api/t/table-9/payments/${t9pay.body.payment.id}/claim`, { deviceId: "portfolio-sana-01", reference: "412356789012" });
+
+  await guest("table-8", "portfolio-nikhil-01", "Nikhil");
+  const t8 = await order("table-8", "portfolio-nikhil-01", [{ itemId: "berry-pulao", qty: 1 }, { itemId: "caramel-custard", qty: 2 }]);
+  await move(t8.order.id, "accept", "cook", "ready", "serve");
+  await call("/api/t/table-8/call", { deviceId: "portfolio-nikhil-01", type: "waiter" });
+
+  await guest("table-3", "portfolio-farah-01", "Farah");
+  const t3 = await order("table-3", "portfolio-farah-01", [{ itemId: "dhansak", qty: 2 }, { itemId: "lemon-soda", qty: 2 }]);
+  await move(t3.order.id, "accept", "cook");
+
+  await guest("table-10", "portfolio-irfan-01", "Irfan");
+  const t10 = await order("table-10", "portfolio-irfan-01", [{ itemId: "kheema-pav", qty: 2 }, { itemId: "cheese-toast", qty: 1 }]);
+  await move(t10.order.id, "accept", "cook");
+
+  await guest("table-6", "portfolio-zubin-01", "Zubin");
+  const t6 = await order("table-6", "portfolio-zubin-01", [{ itemId: "chicken-farcha", qty: 1 }, { itemId: "veg-pulao", qty: 1 }]);
+  await move(t6.order.id, "accept");
+
+  await guest("table-7", "portfolio-pooja-01", "Pooja");
+  const t7 = await order("table-7", "portfolio-pooja-01", [{ itemId: "paneer-salli", qty: 1 }, { itemId: "brown-rice", qty: 2 }]);
+  await move(t7.order.id, "accept");
+
+  await guest("table-5", "portfolio-meher-01", "Meher");
+  await guest("table-5", "portfolio-kabir-01", "Kabir");
+  const t5 = await order("table-5", "portfolio-meher-01", [
+    { itemId: "kheema-pav", qty: 1, note: "No onions" },
+    { itemId: "irani-chai", qty: 2 },
+  ]);
+  await move(t5.order.id, "accept", "cook", "ready", "serve");
+  await order("table-5", "portfolio-kabir-01", [{ itemId: "falooda", qty: 1 }]);
+
+  await guest("table-11", "portfolio-tara-01", "Tara");
+  await order("table-11", "portfolio-tara-01", [{ itemId: "samosa", qty: 2 }, { itemId: "ice-cream-soda", qty: 2 }]);
+  console.log("Seeded an evening: 11 tables, from seated to paid.");
 }
 
 // Makes the smaller copies that don't exist yet, for every image in the folder.

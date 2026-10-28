@@ -27,7 +27,18 @@ if (!stylesheet) throw new Error("dist/index.html has no stylesheet link to inli
 const cssFile = path.join(distDir, stylesheet[1]);
 const css = fs.readFileSync(cssFile, "utf8");
 // Font addresses in the CSS are absolute (/assets/...), so they still work inline.
-html = html.replace(stylesheet[0], () => `<style>${css}</style>`);
+// The heading font is preloaded on wide screens only. There, the big headline's
+// words would move a fraction of a pixel when the font swaps in. On a phone the
+// preloaded font lands during hydration and makes one long task (about 90 ms of
+// blocking time in Lighthouse), and "Bricolage Fallback" (index.css) already
+// keeps the shift at 0, so phones skip it.
+const headingFont = css.match(/\/assets\/bricolage-grotesque-latin-wght-normal-[\w-]+\.woff2/);
+if (!headingFont) throw new Error("The CSS has no Latin Bricolage Grotesque file to preload.");
+html = html.replace(
+  stylesheet[0],
+  () =>
+    `<link rel="preload" href="${headingFont[0]}" as="font" type="font/woff2" crossorigin media="(min-width: 1024px)" />\n    <style>${css}</style>`,
+);
 fs.rmSync(cssFile);
 
 fs.writeFileSync(indexFile, html);

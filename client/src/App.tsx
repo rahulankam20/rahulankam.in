@@ -1,5 +1,4 @@
 import { site } from "./content";
-import { useScrollReveal } from "./lib/motion";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import FloatingWhatsApp from "./components/FloatingWhatsApp";
@@ -15,8 +14,6 @@ import CtaBand from "./sections/CtaBand";
 import Contact from "./sections/Contact";
 
 export default function App() {
-  useScrollReveal();
-
   return (
     <>
       <a

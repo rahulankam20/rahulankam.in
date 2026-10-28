@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Arial, resized to Bricolage Grotesque's measure at the headings' weight (800):
+   3.3% wider, with its taller ascenders and descenders. The headings show in it
+   for the moment before the web font arrives, and keep their line breaks when it
+   swaps in, so nothing shifts. Measured in Chromium against the fontsource file;
+   Roboto stands in on Android, where there is no Arial. */
+@font-face {
+  font-family: "Bricolage Fallback";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Arial"), local("Roboto Bold"), local("Roboto-Bold");
+  font-weight: 100 900;
+  size-adjust: 103.3%;
+  ascent-override: 90%;
+  descent-override: 26.1%;
+  line-gap-override: 0%;
+}
+
 @layer base {
   /* HSL channels; tailwind.config.ts turns them into colours. */
   :root {
@@ -47,7 +62,6 @@
   }
 
   html {
-    scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -72,14 +86,13 @@
     outline-offset: 3px;
   }
 
+  /* Every animation lives in the Motion block at the end of this file, behind
+     prefers-reduced-motion: no-preference. For anyone who asks for less
+     motion, hover transitions go too. */
   @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
     *,
     ::before,
     ::after {
-      animation: none !important;
       transition: none !important;
     }
   }
@@ -168,21 +181,12 @@
     mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 25%, transparent 75%);
   }
 
-  /* Slow-moving glows behind the hero and the call-to-action band. */
+  /* Soft glows behind the hero and the call-to-action band. They drift with
+     the scroll, at their own depth (Motion, below). */
   .blob {
     position: absolute;
     border-radius: 9999px;
     pointer-events: none;
-    will-change: transform;
-    animation: blob-drift 18s ease-in-out infinite alternate;
-  }
-
-  .float-slow {
-    animation: float 7s ease-in-out infinite;
-  }
-
-  .float-slower {
-    animation: float 9s ease-in-out -3s infinite;
   }
 
   /* Hero visual that leans towards the mouse (see Tilt in lib/motion.tsx). */
@@ -222,9 +226,6 @@
   .btn-shine:hover::after {
     transform: translateX(120%);
   }
-  .btn-shine-auto::after {
-    animation: shine-sweep 4.5s ease-in-out 2.4s infinite;
-  }
 
   /* Animated gradient frame for the recommended package: a conic gradient
      turns behind the card. Only its transform animates, which the GPU does
@@ -250,7 +251,6 @@
       hsl(var(--primary) / 0.2)
     );
     transform: translate(-50%, -50%);
-    animation: glow-spin 5s linear infinite;
   }
 
   .marquee {
@@ -260,10 +260,6 @@
   .marquee-track {
     display: flex;
     width: max-content;
-    animation: marquee 40s linear infinite;
-  }
-  .marquee:hover .marquee-track {
-    animation-play-state: paused;
   }
 
   /* The hero's play button sends out a soft ring, so the eye lands on it. */
@@ -273,7 +269,7 @@
     inset: 0;
     border-radius: 9999px;
     background: hsl(var(--primary));
-    animation: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+    opacity: 0;
   }
 
   /* A dot that sends out a soft ring, for "live" status. */
@@ -283,28 +279,7 @@
     inset: 0;
     border-radius: 9999px;
     background: inherit;
-    animation: dot-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
-  }
-
-  .ping-slow {
-    animation: ping-slow 2.6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
-  }
-
-  /* On-load animations: pure CSS, so they start with the first paint. The
-     whole hero is in place about a second after it first appears. */
-  .load-in {
-    animation: load-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    animation-delay: var(--d, 0ms);
-  }
-  .load-zoom {
-    animation: load-zoom 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    animation-delay: var(--d, 0ms);
-  }
-  .nav-in {
-    animation: nav-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  }
-  .menu-in {
-    animation: load-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    opacity: 0;
   }
 
   /* Hero title: each word slides up out of its own mask. */
@@ -317,70 +292,38 @@
   }
   .word-in {
     display: inline-block;
-    animation: word-up 0.7s cubic-bezier(0.2, 0.75, 0.2, 1) both;
-    animation-delay: calc(var(--i, 0) * 40ms + 80ms);
   }
 
-  details[open] > .faq-answer {
-    animation: load-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  /* A project's numbers rise out of their own masks (Motion, below). */
+  .stat-mask {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+  .stat-rise {
+    display: inline-block;
   }
 
-  /* Scroll reveal (see useScrollReveal in lib/motion.tsx). Everything is
-     visible by default; once the app runs it hides only what is still below
-     the screen and brings each piece in as it scrolls into view. */
   [data-reveal="line"] {
     transform-origin: left center;
   }
-  .reveal-pending {
-    opacity: 0;
-    transform: translate3d(0, 28px, 0);
-  }
-  .reveal-pending[data-reveal="fade"] {
-    transform: none;
-  }
-  .reveal-pending[data-reveal="zoom"] {
-    transform: scale(0.94);
-  }
-  .reveal-pending[data-reveal="left"] {
-    transform: translate3d(-36px, 0, 0);
-  }
-  .reveal-pending[data-reveal="right"] {
-    transform: translate3d(36px, 0, 0);
-  }
-  .reveal-pending[data-reveal="line"] {
-    opacity: 1;
-    transform: scaleX(0);
-  }
-  .reveal-armed {
-    transition:
-      opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1),
-      transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
-    transition-delay: var(--reveal-delay, 0ms);
-  }
-  .reveal-armed[data-reveal="line"] {
-    transition-duration: 0.7s, 1.6s;
-  }
-}
 
-@keyframes blob-drift {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
+  /* The experience timeline's line, drawn down the page as it scrolls past (Motion). */
+  .timeline-draw {
+    position: relative;
   }
-  50% {
-    transform: translate3d(40px, -30px, 0) scale(1.08);
-  }
-  100% {
-    transform: translate3d(-30px, 30px, 0) scale(0.94);
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
+  .timeline-draw::before {
+    content: "";
+    position: absolute;
+    left: -2px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    border-radius: 9999px;
+    background: linear-gradient(hsl(var(--grad-from)), hsl(var(--grad-via)) 50%, hsl(var(--grad-to)));
+    transform-origin: top;
   }
 }
 
@@ -437,14 +380,11 @@
   }
 }
 
+/* The hero's card (the largest image on the first screen) settles from a
+   tilt. It moves; it never fades. */
 @keyframes load-zoom {
   from {
-    opacity: 0;
     transform: perspective(1200px) rotateX(12deg) translateY(36px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: none;
   }
 }
 
@@ -459,13 +399,336 @@
   }
 }
 
+/* Move only: the mask hides each word until it rises. */
 @keyframes word-up {
   from {
-    opacity: 0;
     transform: translateY(105%);
   }
+}
+
+/* Scroll keyframes. The reveals give only their starting state and fill
+   backwards, so once a reveal is over the element is back to its own styles
+   and hover effects work again. */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes reveal-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    transform: translateX(-36px);
+  }
+}
+@keyframes reveal-right {
+  from {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+}
+@keyframes reveal-wipe {
+  from {
+    clip-path: inset(100% 0 0 0 round 0.75rem);
+  }
   to {
-    opacity: 1;
+    clip-path: inset(0 0 0 0 round 0.75rem);
+  }
+}
+@keyframes draw-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes draw-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes rise-from-mask {
+  from {
+    transform: translateY(110%);
+  }
+}
+@keyframes spin-in {
+  from {
+    transform: rotate(-150deg) scale(0.3);
+  }
+}
+@keyframes drift {
+  to {
+    transform: translate3d(var(--dx, 0), var(--dy, 0), 0);
+  }
+}
+@keyframes recede {
+  to {
+    transform: perspective(1400px) rotateX(18deg) translateY(3rem) scale(0.92);
+  }
+}
+@keyframes phone-rise {
+  from {
+    transform: translateY(var(--rise, 3rem)) rotate(var(--tilt, 0deg));
+  }
+  to {
     transform: none;
+  }
+}
+@keyframes settle-back {
+  to {
+    transform: scale(calc(1 - (var(--count) - 1 - var(--i)) * 0.05));
+  }
+}
+@keyframes panel-open {
+  from {
+    transform: scale(0.9);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* =====================================================================
+   Motion
+   Every animation on the page is declared here, behind
+   prefers-reduced-motion: no-preference, and the scroll-driven ones also
+   behind @supports (animation-timeline: view()). Without them every element
+   simply sits in its final place. Only transform, opacity and clip-path
+   animate, so nothing shifts the layout. Scroll-driven rules use longhand
+   properties: a minifier can fold the shorthand into a form browsers reject.
+   One scroll scene per screen:
+     hero        the card leans back and sinks; the glows, dots and badges
+                 drift at their own depths
+     work        screenshots are uncovered, the phones rise and straighten,
+                 the numbers rise out of their masks
+     services    packages rise in
+     process     sticky stacking cards on a phone; the line draws on a laptop
+     why me      each icon spins into place
+     about       the timeline draws itself down the page
+     call band   the panel opens while its glows drift apart
+   ===================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* ---- On load: one orchestrated entrance, done in about a second ---- */
+  .nav-in {
+    animation: nav-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .load-in {
+    animation: load-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: var(--d, 0ms);
+  }
+  .load-zoom {
+    animation: load-zoom 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: var(--d, 0ms);
+  }
+  .word-in {
+    animation: word-up 0.7s cubic-bezier(0.2, 0.75, 0.2, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 40ms + 80ms);
+  }
+  .menu-in {
+    animation: load-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  details[open] > .faq-answer {
+    animation: load-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  /* ---- Small, steady cues that point at something to press ---- */
+  .marquee-track {
+    animation: marquee 40s linear infinite;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+  .btn-shine-auto::after {
+    animation: shine-sweep 4.5s ease-in-out 2.4s infinite;
+  }
+  .glow-border::before {
+    animation: glow-spin 5s linear infinite;
+  }
+  .play-pulse::before {
+    animation: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  .live-dot::after {
+    animation: dot-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  .ping-slow {
+    animation: ping-slow 2.6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+  }
+
+  /* ---- On scroll ---- */
+  @supports (animation-timeline: view()) {
+    /* Reveals, as each piece enters. revealDelay() in lib/motion.tsx shifts
+       a piece's range a little, so a row comes in one after another. */
+    [data-reveal] {
+      animation-name: reveal-up;
+      animation-duration: 1ms;
+      animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+      animation-fill-mode: backwards;
+      animation-timeline: view();
+      animation-range-start: entry var(--reveal-shift, 0%);
+      animation-range-end: entry calc(var(--reveal-shift, 0%) + 60%);
+    }
+    [data-reveal="fade"] {
+      animation-name: reveal-fade;
+    }
+    [data-reveal="zoom"] {
+      animation-name: reveal-zoom;
+    }
+    [data-reveal="left"] {
+      animation-name: reveal-left;
+    }
+    [data-reveal="right"] {
+      animation-name: reveal-right;
+    }
+    [data-reveal="wipe"] {
+      animation-name: reveal-wipe;
+      animation-range-end: entry calc(var(--reveal-shift, 0%) + 85%);
+    }
+    /* The process line draws itself across the steps, with the scroll. */
+    [data-reveal="line"] {
+      animation-name: draw-x;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-range-start: entry 40%;
+      animation-range-end: cover 55%;
+    }
+
+    /* Hero: the background drifts at three depths while the hero leaves. */
+    .hero-drift {
+      animation-name: drift;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+      animation-range-start: 0;
+      animation-range-end: 100vh;
+    }
+    /* The card leans back and sinks as it leaves the top of the screen. */
+    .hero-recede {
+      transform-origin: 50% 100%;
+      animation-name: recede;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range-start: exit 0%;
+      animation-range-end: exit 100%;
+    }
+    /* The badges float off it, nearer the viewer, so faster. */
+    .badge-depth {
+      animation-name: drift;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range-start: exit -40%;
+      animation-range-end: exit 100%;
+    }
+
+    /* Work: the phones rise and straighten at their own speeds. */
+    .phone-rise {
+      animation-name: phone-rise;
+      animation-duration: 1ms;
+      animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range-start: entry 0%;
+      animation-range-end: cover 50%;
+    }
+    /* The numbers rise out of their masks. */
+    .stat-rise {
+      animation-name: rise-from-mask;
+      animation-duration: 1ms;
+      animation-timing-function: cubic-bezier(0.2, 0.75, 0.2, 1);
+      animation-fill-mode: backwards;
+      animation-timeline: view();
+      animation-range-start: entry calc(20% + var(--reveal-shift, 0%));
+      animation-range-end: entry calc(100% + var(--reveal-shift, 0%));
+    }
+
+    /* Why me: each icon spins into its tile. */
+    .icon-spin {
+      animation-name: spin-in;
+      animation-duration: 1ms;
+      animation-timing-function: cubic-bezier(0.2, 0.75, 0.2, 1);
+      animation-fill-mode: backwards;
+      animation-timeline: view();
+      animation-range-start: entry 0%;
+      animation-range-end: cover 40%;
+    }
+
+    /* About: the timeline draws itself down the page. */
+    .timeline-draw::before {
+      animation-name: draw-y;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range-start: entry 30%;
+      animation-range-end: cover 70%;
+    }
+
+    /* The call-to-action panel opens up while its glows drift apart. */
+    .panel-open {
+      animation-name: panel-open;
+      animation-duration: 1ms;
+      animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range-start: entry 0%;
+      animation-range-end: entry 90%;
+    }
+    .panel-drift {
+      animation-name: drift;
+      animation-duration: 1ms;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range-start: cover 0%;
+      animation-range-end: cover 100%;
+    }
+
+    /* Process on a phone: sticky stacking cards. Each step pins a little below
+       the last, and settles back as the next slides over it. */
+    @media (max-width: 39.999rem) {
+      .process-steps {
+        gap: 0;
+        view-timeline-name: --steps;
+      }
+      .process-step {
+        position: sticky;
+        top: calc(5rem + var(--i) * 0.85rem);
+        padding-bottom: 1rem;
+      }
+      .process-step > .process-card {
+        transform-origin: 50% 0;
+        animation-name: settle-back;
+        animation-duration: 1ms;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --steps;
+        animation-range-start: exit-crossing calc(var(--i) / var(--count) * 100%);
+        animation-range-end: exit-crossing calc((var(--i) + 1) / var(--count) * 100%);
+      }
+    }
   }
 }

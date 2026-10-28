@@ -41,7 +41,7 @@ export default function About() {
             <h3 data-reveal className="flex items-center gap-2 text-xl font-bold">
               <Briefcase className="h-5 w-5 text-accent" aria-hidden /> Experience
             </h3>
-            <ol className="mt-6 space-y-8 border-l-2 border-border pl-6">
+            <ol className="timeline-draw mt-6 space-y-8 border-l-2 border-border pl-6">
               {about.experience.map((job, index) => (
                 <li key={`${job.role}-${job.period}`} data-reveal="left" style={revealDelay(index, 150)} className="relative">
                   {/* The current job's dot pulses. */}

@@ -70,7 +70,7 @@ export const hero = {
     src: "/videos/intro.mp4",
     poster: "/images/intro-poster.webp",
     label: "Watch the intro video",
-    tagline: "1 minute · all three demos in action",
+    tagline: "1 minute · three of the demos in action",
     posterAlt: "The intro video's opening frame: three phones running the online store, the clinic website and the restaurant website",
     title: "Websites and online stores that bring you customers: a 60-second intro",
     description:
@@ -103,7 +103,7 @@ export const marquee = [
 export const work = {
   title: "Selected work",
   intro:
-    "An online store, a clinic website in three languages, and a restaurant website with table bookings and catering quotes. Each is built to be rebranded, so your site starts from code that is already tested and working.",
+    "An online store, a system that takes orders and payments at the table, a restaurant website and a clinic website in three languages. Each is built to be rebranded, so your site starts from code that is already tested and working.",
 };
 
 // A screenshot, with its size in pixels so the page keeps its place while it loads.
@@ -130,7 +130,9 @@ export type Project = {
   phoneImages: [Shot, Shot];
 };
 
-// The Work section, one card per project, in this order.
+// The Work section, one card per project, in this order: the two products
+// first (the store, then table ordering), then the two websites, with the
+// restaurant site next to table ordering for a restaurant owner reading down.
 export const projects: Project[] = [
   {
     id: "store",
@@ -172,47 +174,47 @@ export const projects: Project[] = [
     ],
   },
   {
-    id: "dental",
-    kicker: "Clinic website · Healthcare",
-    title: "Dental clinic website in English, Marathi and Hindi",
+    id: "tableside",
+    kicker: "Table ordering · Cafés and restaurants",
+    title: "Order and pay from the table, with a live kitchen screen",
     summary:
-      "A demo website for Mogra Dental Care, a fictional clinic in Nerul, Navi Mumbai. Patients see the timings, what each treatment involves and where its charges start, and book an appointment on WhatsApp in their own language.",
+      "Guests scan the QR code on their table, order from a photo menu and pay by UPI from their own phone, with every phone at the table adding to one bill. The kitchen sees each order the moment it is sent, and the staff see every table on a live floor map. Shown on a fictional Irani café in CBD Belapur, Navi Mumbai.",
     highlights: [
-      "English, Marathi and Hindi, with a one-tap language switch",
-      "Booking on WhatsApp: the patient picks a day and a time of day, and WhatsApp opens with the message ready",
-      "A live \"Open now\" badge, the week's timings and holiday closures",
-      "Each treatment explained, with its starting charge",
-      "Checked automatically for what dental advertising rules don't allow, such as discounts, testimonials and before-and-after photos",
-      "Call, WhatsApp and directions buttons always in reach on a phone",
+      "Scan the table's QR code and the menu opens in the browser: no app, no sign-up",
+      "Every phone at the table orders onto one bill, with GST and an optional tip",
+      "Orders reach the kitchen screen instantly, and the floor map shows each table's state",
+      "Call the waiter, ask for the bill and pay by UPI or at the counter, all from the table",
+      "Sold-out dishes, QR cards to print, the day's sales and a CSV for the accountant",
+      "English, Hindi and Marathi, plus Wi-Fi, reviews and a quiz while the food comes",
     ],
-    stack: ["Astro", "TypeScript", "Tailwind CSS", "Zod", "Cloudflare"],
-    // Scores from Google Lighthouse, on a phone, on every language's page.
+    stack: ["Astro", "Svelte", "TypeScript", "Tailwind CSS", "Cloudflare Workers", "Durable Objects", "D1"],
+    // Tests counted in the repo; scores from Google Lighthouse, on a phone, on the home page and the guest app.
     stats: [
-      { value: 3, label: "languages: English, Marathi and Hindi" },
+      { value: 41, label: "automated tests, from the bill maths to two phones at one table" },
       { value: 97, suffix: "+", label: "speed score on a phone (Google Lighthouse)" },
       { value: 100, label: "accessibility score (Google Lighthouse)" },
       { value: 0, prefix: "₹", label: "a month for hosting" },
     ],
-    note: "Its dentists and charges are examples. On the demo, calls and WhatsApp messages come to me.",
+    note: "Its café, menu and prices are examples. Orders on the live demo go nowhere and nothing is charged. Open table 5 on your phone to try it.",
     cta: {
-      label: "Get a website like this",
-      message: "Hi Rahul, I saw your dental clinic website. I'd like a website like it for my business.",
+      label: "Get this for your restaurant",
+      message: "Hi Rahul, I saw your table ordering demo. I'd like it for my restaurant or café.",
       servicesOnly: true,
     },
-    liveUrl: "https://dental.rahulankam.in/",
+    liveUrl: "https://tableside.rahulankam.in/",
     images: [
       {
-        src: "/images/dental-home-desktop.webp",
-        alt: "Mogra Dental Care's home page: a photo of the clinic, an \"Open now\" badge, a Book on WhatsApp button and the week's timings",
+        src: "/images/tableside-floor-desktop.webp",
+        alt: "The staff's live floor map: each table coloured by its state, from seated to paid, with alerts for a ready ticket, a UPI payment to confirm and a table that needs a waiter",
         width: 1366,
         height: 854,
       },
-      { src: "/images/dental-treatments-desktop.webp", alt: "Treatments and charges: what each treatment involves, how long it takes and its starting charge", width: 1366, height: 854 },
-      { src: "/images/dental-booking-desktop.webp", alt: "Appointment form: the patient picks a treatment, a day and a time of day, then sends it on WhatsApp", width: 1366, height: 854 },
+      { src: "/images/tableside-kitchen-desktop.webp", alt: "The kitchen screen: four tickets with their table, dishes and cooking state", width: 1366, height: 854 },
+      { src: "/images/tableside-home-desktop.webp", alt: "The café's home page: a table seen from above, with chai, custard, samosas and a QR card for table 5", width: 1366, height: 854 },
     ],
     phoneImages: [
-      { src: "/images/dental-home-mobile.webp", alt: "The clinic's home page on a phone, with call, WhatsApp and directions buttons along the bottom", width: 390, height: 844 },
-      { src: "/images/dental-marathi-mobile.webp", alt: "The same page in Marathi on a phone", width: 390, height: 844 },
+      { src: "/images/tableside-menu-mobile.webp", alt: "The photo menu on a guest's phone, with three items in the basket", width: 390, height: 844 },
+      { src: "/images/tableside-bill-mobile.webp", alt: "One bill for the table on a phone: round one from Meher, round two from Kabir, with GST and a Pay at the table button", width: 390, height: 844 },
     ],
   },
   {
@@ -257,6 +259,50 @@ export const projects: Project[] = [
     phoneImages: [
       { src: "/images/restaurant-home-mobile.webp", alt: "The restaurant's home page on a phone", width: 390, height: 844 },
       { src: "/images/restaurant-menu-mobile.webp", alt: "The menu's diet and spice filters on a phone", width: 390, height: 844 },
+    ],
+  },
+  {
+    id: "dental",
+    kicker: "Clinic website · Healthcare",
+    title: "Dental clinic website in English, Marathi and Hindi",
+    summary:
+      "A demo website for Mogra Dental Care, a fictional clinic in Nerul, Navi Mumbai. Patients see the timings, what each treatment involves and where its charges start, and book an appointment on WhatsApp in their own language.",
+    highlights: [
+      "English, Marathi and Hindi, with a one-tap language switch",
+      "Booking on WhatsApp: the patient picks a day and a time of day, and WhatsApp opens with the message ready",
+      "A live \"Open now\" badge, the week's timings and holiday closures",
+      "Each treatment explained, with its starting charge",
+      "Checked automatically for what dental advertising rules don't allow, such as discounts, testimonials and before-and-after photos",
+      "Call, WhatsApp and directions buttons always in reach on a phone",
+    ],
+    stack: ["Astro", "TypeScript", "Tailwind CSS", "Zod", "Cloudflare"],
+    // Scores from Google Lighthouse, on a phone, on every language's page.
+    stats: [
+      { value: 3, label: "languages: English, Marathi and Hindi" },
+      { value: 97, suffix: "+", label: "speed score on a phone (Google Lighthouse)" },
+      { value: 100, label: "accessibility score (Google Lighthouse)" },
+      { value: 0, prefix: "₹", label: "a month for hosting" },
+    ],
+    note: "Its dentists and charges are examples. On the demo, calls and WhatsApp messages come to me.",
+    cta: {
+      label: "Get a website like this",
+      message: "Hi Rahul, I saw your dental clinic website. I'd like a website like it for my business.",
+      servicesOnly: true,
+    },
+    liveUrl: "https://dental.rahulankam.in/",
+    images: [
+      {
+        src: "/images/dental-home-desktop.webp",
+        alt: "Mogra Dental Care's home page: a photo of the clinic, an \"Open now\" badge, a Book on WhatsApp button and the week's timings",
+        width: 1366,
+        height: 854,
+      },
+      { src: "/images/dental-treatments-desktop.webp", alt: "Treatments and charges: what each treatment involves, how long it takes and its starting charge", width: 1366, height: 854 },
+      { src: "/images/dental-booking-desktop.webp", alt: "Appointment form: the patient picks a treatment, a day and a time of day, then sends it on WhatsApp", width: 1366, height: 854 },
+    ],
+    phoneImages: [
+      { src: "/images/dental-home-mobile.webp", alt: "The clinic's home page on a phone, with call, WhatsApp and directions buttons along the bottom", width: 390, height: 844 },
+      { src: "/images/dental-marathi-mobile.webp", alt: "The same page in Marathi on a phone", width: 390, height: 844 },
     ],
   },
 ];

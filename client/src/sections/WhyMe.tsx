@@ -23,7 +23,7 @@ export default function WhyMe() {
             return (
               <li key={point.title} data-reveal style={revealDelay(index % 3, 110)} className="group flex gap-4">
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/35 to-primary/5 text-accent ring-1 ring-primary/25 transition duration-300 group-hover:-rotate-6 group-hover:scale-110">
-                  <Icon className="h-5 w-5" aria-hidden />
+                  <Icon className="icon-spin h-5 w-5" aria-hidden />
                 </span>
                 <div>
                   <h3 className="font-bold">{point.title}</h3>

@@ -3,14 +3,14 @@ import { SiWhatsapp } from "react-icons/si";
 import { projects, site, work, type Project, type Shot } from "../content";
 import { imageSizes, imageSrcSet, imageUrl } from "../lib/images";
 import { contactHref, isWhatsapp } from "../lib/links";
-import { CountUp, revealDelay } from "../lib/motion";
+import { motionVars, revealDelay } from "../lib/motion";
 import CtaLink from "../components/CtaLink";
 import SectionHeading from "../components/SectionHeading";
 
 function Screenshot({ shot, index, sizes, className = "" }: { shot: Shot; index: number; sizes: string; className?: string }) {
   return (
     <figure
-      data-reveal="zoom"
+      data-reveal="wipe"
       style={revealDelay(index, 120)}
       className={`group overflow-hidden rounded-xl border border-border bg-muted shadow-sm ${className}`}
     >
@@ -38,7 +38,6 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
   return (
     <article
       id={`work-${project.id}`}
-      data-reveal="fade"
       className="relative scroll-mt-24 overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-10"
     >
       <div
@@ -51,10 +50,8 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
           <h3 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{project.title}</h3>
           <p className="mt-4 leading-relaxed text-muted-foreground">{project.summary}</p>
           <ul className="tick-list mt-6 space-y-3">
-            {project.highlights.map((item, index) => (
-              <li key={item} data-reveal={flip ? "right" : "left"} style={revealDelay(index, 70)}>
-                {item}
-              </li>
+            {project.highlights.map((item) => (
+              <li key={item}>{item}</li>
             ))}
           </ul>
           <ul className="mt-6 flex flex-wrap gap-2" aria-label="Built with">
@@ -96,9 +93,11 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
           ))}
           <div className="col-span-2 flex justify-center gap-4 pt-2 sm:gap-6">
             {project.phoneImages.map((shot, index) => (
-              <figure key={shot.src} data-reveal style={revealDelay(index + 3, 120)} className="w-[38%] max-w-[180px]">
+              <figure key={shot.src} className="w-[38%] max-w-[180px]">
+                {/* The phones rise and straighten as the card scrolls up, the second further and faster. */}
                 <div
-                  className={`${index === 0 ? "float-slow" : "float-slower"} overflow-hidden rounded-[1.2rem] border-[5px] border-neutral-900 bg-muted shadow-xl`}
+                  className="phone-rise overflow-hidden rounded-[1.2rem] border-[5px] border-neutral-900 bg-muted shadow-xl"
+                  style={motionVars(index === 0 ? { rise: "3rem", tilt: "-6deg" } : { rise: "6rem", tilt: "7deg" })}
                 >
                   <img
                     src={imageUrl(shot.src)}
@@ -122,13 +121,18 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
         {project.stats.map((stat, index) => (
           <div
             key={stat.label}
-            data-reveal
-            style={revealDelay(index, 100)}
             className="card-hover flex flex-col-reverse justify-end rounded-2xl border border-border bg-background/60 p-4 sm:p-5"
           >
             <dt className="mt-1 text-sm text-muted-foreground">{stat.label}</dt>
             <dd className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-              <CountUp value={stat.value} prefix={stat.prefix} suffix={stat.suffix} className="text-gradient" />
+              {/* The number rises out of its own mask as the row scrolls in. */}
+              <span className="stat-mask">
+                <span className="stat-rise text-gradient" style={revealDelay(index, 100)}>
+                  {stat.prefix}
+                  {stat.value.toLocaleString("en-IN")}
+                  {stat.suffix}
+                </span>
+              </span>
             </dd>
           </div>
         ))}

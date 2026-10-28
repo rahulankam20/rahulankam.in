@@ -28,7 +28,7 @@ Images live in `client/public/images/` (WebP, 15 to 90 KB each). The link-previe
 
 ### Screenshots of the demo websites
 
-The dental and restaurant screenshots are taken by `scripts/screenshots.mjs`, at the sizes the page shows them. It fixes the clock (so "Open now" badges and booking dates look right) and turns animations off. Playwright isn't a dependency here, so install it just for the run:
+The dental, restaurant and Tableside screenshots are taken by `scripts/screenshots.mjs`, at the sizes the page shows them. It fixes the clock (so "Open now" badges and booking dates look right) and turns animations off. Playwright isn't a dependency here, so install it just for the run:
 
 ```bash
 npm install --no-save playwright@1.63.0
@@ -37,6 +37,26 @@ node scripts/screenshots.mjs restaurant path/to/site-starter/dist/demo-restauran
 ```
 
 The second argument is the demo's built folder (`npm run build -- <site id>` in the site-starter repo) or its address once it's online. The script overwrites the project's five images and their smaller copies; the file names and alt texts are in `content.ts`.
+
+Tableside needs its Worker, so point the script at a fresh local copy, never the live demo: it first fills the floor with an evening's orders through the API, then signs in as staff for the floor and kitchen shots.
+
+```bash
+# in the tableside repo
+node scripts/preview.mjs --port 8799 --fresh --var UPI_VPA:cafesohrab@upi
+# here
+node scripts/screenshots.mjs tableside http://127.0.0.1:8799
+```
+
+## Motion
+
+All of it is CSS, in the "Motion" block at the end of `client/src/index.css`: no animation library, and no JavaScript except the hero card's lean towards the pointer. Every animation sits behind `prefers-reduced-motion: no-preference`, and the scroll-driven ones also behind `@supports (animation-timeline: view())`; without either, everything is simply in place. Only `transform`, `opacity` and `clip-path` animate, so nothing shifts the layout.
+
+- **On load:** one entrance. The headline's words rise out of their masks and the video card settles from a tilt; both move, neither fades, because they are the largest things on the first screen.
+- **On scroll, one scene per screen:** the hero card leans back while its backdrop drifts at three depths; each project's screenshots are uncovered and its phones rise and straighten; the project numbers rise out of their masks; the process steps are sticky stacking cards on a phone and a self-drawing line on a laptop; the "why me" icons spin into place; the experience timeline draws itself; the call-to-action panel opens while its glows drift apart.
+- **Reveals:** add `data-reveal` (or `="fade"`, `"zoom"`, `"left"`, `"right"`, `"wipe"`) to an element, and `revealDelay(index)` from `lib/motion.tsx` to stagger a row.
+- **Fonts:** headings fall back to "Bricolage Fallback", Arial resized to Bricolage Grotesque's measure, so they keep their line breaks when the web font arrives. Wide screens also preload the font (`scripts/prerender.mjs`); phones don't, because there it lands during hydration and costs about 90 ms of blocking time.
+
+Budget, measured on the built page with Lighthouse's mobile emulation: performance 95 or better, LCP under 2.5 s, blocking time under 100 ms, CLS under 0.05. On 28 October 2026 it scored 99 on a phone (LCP 2.04–2.09 s, blocking 0–6 ms, CLS 0) and 100 on a computer.
 
 ## Running it locally
 
@@ -54,6 +74,7 @@ npm run preview   # serve dist/ at http://localhost:4173
 
 - `client/index.html`: the page shell. `<!-- seo -->` is filled in by the plugin in `vite.config.ts`; `<!--app-html-->` by `scripts/prerender.mjs`, which also moves the stylesheet into the page.
 - `client/src/sections/`: one file per page section, in page order in `App.tsx`.
+- `client/src/lib/motion.tsx`: `revealDelay`, `loadDelay`, `motionVars` (the custom properties an animation reads) and `Tilt`.
 - `client/src/components/`: navbar, footer, buttons, theme switch, floating WhatsApp button.
 - `client/public/`: copied as-is, including `_headers` (Cloudflare security and caching headers), `404.html`, `robots.txt` and `sitemap.xml`.
 - `wrangler.jsonc`: tells Cloudflare to publish `dist/` as static files. Its `name` must match the Worker's name in the dashboard.

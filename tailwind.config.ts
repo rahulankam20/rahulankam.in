@@ -33,7 +33,9 @@ export default {
       fontFamily: {
         sans: systemSans,
         // Headings: self-hosted from @fontsource-variable/bricolage-grotesque (imported in main.tsx).
-        display: ['"Bricolage Grotesque Variable"', ...systemSans],
+        // "Bricolage Fallback" (index.css) is Arial resized to Bricolage's measure, so the
+        // headings don't reflow when the web font swaps in.
+        display: ['"Bricolage Grotesque Variable"', '"Bricolage Fallback"', ...systemSans],
       },
     },
   },
