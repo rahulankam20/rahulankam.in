@@ -14,7 +14,7 @@ export default function Process() {
             data-reveal="line"
             className="absolute inset-x-[12%] top-11 hidden h-0.5 rounded-full bg-gradient-to-r from-[hsl(var(--grad-from))] via-[hsl(var(--grad-via))] to-[hsl(var(--grad-to))] lg:block"
           />
-          {/* On a phone the steps are sticky stacking cards; wider, a row that rises in (index.css, Motion). */}
+          {/* On a phone the steps are sticky stacking cards; wider, a row that reveals one after another (index.css, Motion). */}
           <ol className="process-steps relative grid gap-6 sm:grid-cols-2 lg:grid-cols-4" style={motionVars({ count: howItWorks.steps.length })}>
             {howItWorks.steps.map((step, index) => (
               <li key={step.title} className="process-step" style={motionVars({ i: index })}>

@@ -181,8 +181,8 @@
     mask-image: radial-gradient(ellipse 75% 65% at 50% 35%, #000 25%, transparent 75%);
   }
 
-  /* Soft glows behind the hero and the call-to-action band. They drift with
-     the scroll, at their own depth (Motion, below). */
+  /* Soft glows behind the hero and the call-to-action band. They wander
+     slowly on their own (Motion, below). */
   .blob {
     position: absolute;
     border-radius: 9999px;
@@ -294,18 +294,6 @@
     display: inline-block;
   }
 
-  /* A project's numbers rise out of their own masks (Motion, below). */
-  .stat-mask {
-    display: inline-block;
-    overflow: hidden;
-    vertical-align: bottom;
-    padding-bottom: 0.08em;
-    margin-bottom: -0.08em;
-  }
-  .stat-rise {
-    display: inline-block;
-  }
-
   [data-reveal="line"] {
     transform-origin: left center;
   }
@@ -406,13 +394,13 @@
   }
 }
 
-/* Scroll keyframes. The reveals give only their starting state and fill
-   backwards, so once a reveal is over the element is back to its own styles
-   and hover effects work again. */
+/* Keyframes for the scroll-triggered reveals. Each gives only its starting
+   state, so once a reveal is over the element is back to its own styles and
+   hover effects work again. */
 @keyframes reveal-up {
   from {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translate3d(0, 28px, 0);
   }
 }
 @keyframes reveal-fade {
@@ -429,42 +417,18 @@
 @keyframes reveal-left {
   from {
     opacity: 0;
-    transform: translateX(-36px);
+    transform: translate3d(-36px, 0, 0);
   }
 }
 @keyframes reveal-right {
   from {
     opacity: 0;
-    transform: translateX(36px);
-  }
-}
-@keyframes reveal-wipe {
-  from {
-    clip-path: inset(100% 0 0 0 round 0.75rem);
-  }
-  to {
-    clip-path: inset(0 0 0 0 round 0.75rem);
+    transform: translate3d(36px, 0, 0);
   }
 }
 @keyframes draw-x {
   from {
     transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-@keyframes draw-y {
-  from {
-    transform: scaleY(0);
-  }
-  to {
-    transform: scaleY(1);
-  }
-}
-@keyframes rise-from-mask {
-  from {
-    transform: translateY(110%);
   }
 }
 @keyframes spin-in {
@@ -472,14 +436,33 @@
     transform: rotate(-150deg) scale(0.3);
   }
 }
+
+/* Idle: the glows wander, the badges and phones bob. */
+@keyframes blob-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(40px, -30px, 0) scale(1.08);
+  }
+  100% {
+    transform: translate3d(-30px, 30px, 0) scale(0.94);
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Scroll-scrubbed. */
 @keyframes drift {
   to {
     transform: translate3d(var(--dx, 0), var(--dy, 0), 0);
-  }
-}
-@keyframes recede {
-  to {
-    transform: perspective(1400px) rotateX(18deg) translateY(3rem) scale(0.92);
   }
 }
 @keyframes phone-rise {
@@ -490,45 +473,46 @@
     transform: none;
   }
 }
+@keyframes draw-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
 @keyframes settle-back {
   to {
     transform: scale(calc(1 - (var(--count) - 1 - var(--i)) * 0.05));
-  }
-}
-@keyframes panel-open {
-  from {
-    transform: scale(0.9);
-  }
-  to {
-    transform: none;
   }
 }
 
 /* =====================================================================
    Motion
    Every animation on the page is declared here, behind
-   prefers-reduced-motion: no-preference, and the scroll-driven ones also
+   prefers-reduced-motion: no-preference, and the scroll-scrubbed ones also
    behind @supports (animation-timeline: view()). Without them every element
    simply sits in its final place. Only transform, opacity and clip-path
    animate, so nothing shifts the layout. Scroll-driven rules use longhand
    properties: a minifier can fold the shorthand into a form browsers reject.
-   One scroll scene per screen:
-     hero        the card leans back and sinks; the glows, dots and badges
-                 drift at their own depths
-     work        screenshots are uncovered, the phones rise and straighten,
-                 the numbers rise out of their masks
-     services    packages rise in
-     process     sticky stacking cards on a phone; the line draws on a laptop
-     why me      each icon spins into place
-     about       the timeline draws itself down the page
-     call band   the panel opens while its glows drift apart
+
+   Four kinds of motion:
+     on load    one staggered entrance for the first screen
+     idle       glows wander, badges and phones bob, the strip rolls
+     reveals    scroll-triggered: useScrollReveal (lib/motion.tsx) adds a
+                class as a piece enters, and a keyframe plays once
+     scenes     scroll-scrubbed, one per screen:
+                  hero      multi-layer parallax
+                  work      the phones rise and straighten (rotation)
+                  process   sticky stacking cards on a phone
+                  about     the timeline draws itself
    ===================================================================== */
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
   }
 
-  /* ---- On load: one orchestrated entrance, done in about a second ---- */
+  /* ---- On load ---- */
   .nav-in {
     animation: nav-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
@@ -551,7 +535,17 @@
     animation: load-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
 
-  /* ---- Small, steady cues that point at something to press ---- */
+  /* ---- Idle ---- */
+  .blob {
+    will-change: transform;
+    animation: blob-drift 18s ease-in-out infinite alternate;
+  }
+  .float-slow {
+    animation: float 7s ease-in-out infinite;
+  }
+  .float-slower {
+    animation: float 9s ease-in-out -3s infinite;
+  }
   .marquee-track {
     animation: marquee 40s linear infinite;
   }
@@ -574,45 +568,45 @@
     animation: ping-slow 2.6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
   }
 
-  /* ---- On scroll ---- */
-  @supports (animation-timeline: view()) {
-    /* Reveals, as each piece enters. revealDelay() in lib/motion.tsx shifts
-       a piece's range a little, so a row comes in one after another. */
-    [data-reveal] {
-      animation-name: reveal-up;
-      animation-duration: 1ms;
-      animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
-      animation-fill-mode: backwards;
-      animation-timeline: view();
-      animation-range-start: entry var(--reveal-shift, 0%);
-      animation-range-end: entry calc(var(--reveal-shift, 0%) + 60%);
-    }
-    [data-reveal="fade"] {
-      animation-name: reveal-fade;
-    }
-    [data-reveal="zoom"] {
-      animation-name: reveal-zoom;
-    }
-    [data-reveal="left"] {
-      animation-name: reveal-left;
-    }
-    [data-reveal="right"] {
-      animation-name: reveal-right;
-    }
-    [data-reveal="wipe"] {
-      animation-name: reveal-wipe;
-      animation-range-end: entry calc(var(--reveal-shift, 0%) + 85%);
-    }
-    /* The process line draws itself across the steps, with the scroll. */
-    [data-reveal="line"] {
-      animation-name: draw-x;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-range-start: entry 40%;
-      animation-range-end: cover 55%;
-    }
+  /* ---- Scroll-triggered reveals ----
+     useScrollReveal hides only what is still below the screen (.reveal-pending),
+     then swaps in .reveal-in as each piece enters; the keyframe plays once and
+     the class is removed when it ends. revealDelay() staggers a row. Without
+     JavaScript nothing is ever hidden. */
+  .reveal-pending {
+    opacity: 0;
+  }
+  .reveal-in {
+    animation: reveal-up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal-in[data-reveal="fade"] {
+    animation-name: reveal-fade;
+  }
+  .reveal-in[data-reveal="zoom"] {
+    animation-name: reveal-zoom;
+  }
+  .reveal-in[data-reveal="left"] {
+    animation-name: reveal-left;
+  }
+  .reveal-in[data-reveal="right"] {
+    animation-name: reveal-right;
+  }
+  .reveal-in[data-reveal="line"] {
+    animation-name: draw-x;
+    animation-duration: 1.6s;
+  }
+  /* The "why me" icons spin into their tiles as their row reveals. */
+  .reveal-in .icon-spin {
+    animation: spin-in 0.9s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
 
-    /* Hero: the background drifts at three depths while the hero leaves. */
+  /* ---- Scroll-scrubbed scenes ---- */
+  @supports (animation-timeline: view()) {
+    /* Hero: multi-layer parallax while the first screen scrolls away. Each
+       layer sets its own --dy: the dots barely move, the card lags behind the
+       page, the badges leave ahead of it, the glows go their own ways. */
     .hero-drift {
       animation-name: drift;
       animation-duration: 1ms;
@@ -622,29 +616,8 @@
       animation-range-start: 0;
       animation-range-end: 100vh;
     }
-    /* The card leans back and sinks as it leaves the top of the screen. */
-    .hero-recede {
-      transform-origin: 50% 100%;
-      animation-name: recede;
-      animation-duration: 1ms;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-timeline: view();
-      animation-range-start: exit 0%;
-      animation-range-end: exit 100%;
-    }
-    /* The badges float off it, nearer the viewer, so faster. */
-    .badge-depth {
-      animation-name: drift;
-      animation-duration: 1ms;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-timeline: view();
-      animation-range-start: exit -40%;
-      animation-range-end: exit 100%;
-    }
 
-    /* Work: the phones rise and straighten at their own speeds. */
+    /* Work: each project's phones rise and straighten as the card scrolls up. */
     .phone-rise {
       animation-name: phone-rise;
       animation-duration: 1ms;
@@ -654,29 +627,8 @@
       animation-range-start: entry 0%;
       animation-range-end: cover 50%;
     }
-    /* The numbers rise out of their masks. */
-    .stat-rise {
-      animation-name: rise-from-mask;
-      animation-duration: 1ms;
-      animation-timing-function: cubic-bezier(0.2, 0.75, 0.2, 1);
-      animation-fill-mode: backwards;
-      animation-timeline: view();
-      animation-range-start: entry calc(20% + var(--reveal-shift, 0%));
-      animation-range-end: entry calc(100% + var(--reveal-shift, 0%));
-    }
 
-    /* Why me: each icon spins into its tile. */
-    .icon-spin {
-      animation-name: spin-in;
-      animation-duration: 1ms;
-      animation-timing-function: cubic-bezier(0.2, 0.75, 0.2, 1);
-      animation-fill-mode: backwards;
-      animation-timeline: view();
-      animation-range-start: entry 0%;
-      animation-range-end: cover 40%;
-    }
-
-    /* About: the timeline draws itself down the page. */
+    /* About: the experience timeline draws itself down the page. */
     .timeline-draw::before {
       animation-name: draw-y;
       animation-duration: 1ms;
@@ -687,32 +639,17 @@
       animation-range-end: cover 70%;
     }
 
-    /* The call-to-action panel opens up while its glows drift apart. */
-    .panel-open {
-      animation-name: panel-open;
-      animation-duration: 1ms;
-      animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
-      animation-fill-mode: both;
-      animation-timeline: view();
-      animation-range-start: entry 0%;
-      animation-range-end: entry 90%;
-    }
-    .panel-drift {
-      animation-name: drift;
-      animation-duration: 1ms;
-      animation-timing-function: linear;
-      animation-fill-mode: both;
-      animation-timeline: view();
-      animation-range-start: cover 0%;
-      animation-range-end: cover 100%;
-    }
-
     /* Process on a phone: sticky stacking cards. Each step pins a little below
-       the last, and settles back as the next slides over it. */
+       the last and settles back as the next slides over it. The cards' reveal
+       is off here, so the stack is the one effect. */
     @media (max-width: 39.999rem) {
       .process-steps {
         gap: 0;
         view-timeline-name: --steps;
+      }
+      .process-steps [data-reveal] {
+        opacity: 1;
+        animation: none;
       }
       .process-step {
         position: sticky;

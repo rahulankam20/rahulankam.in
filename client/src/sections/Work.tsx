@@ -3,14 +3,14 @@ import { SiWhatsapp } from "react-icons/si";
 import { projects, site, work, type Project, type Shot } from "../content";
 import { imageSizes, imageSrcSet, imageUrl } from "../lib/images";
 import { contactHref, isWhatsapp } from "../lib/links";
-import { motionVars, revealDelay } from "../lib/motion";
+import { CountUp, motionVars, revealDelay } from "../lib/motion";
 import CtaLink from "../components/CtaLink";
 import SectionHeading from "../components/SectionHeading";
 
 function Screenshot({ shot, index, sizes, className = "" }: { shot: Shot; index: number; sizes: string; className?: string }) {
   return (
     <figure
-      data-reveal="wipe"
+      data-reveal="zoom"
       style={revealDelay(index, 120)}
       className={`group overflow-hidden rounded-xl border border-border bg-muted shadow-sm ${className}`}
     >
@@ -38,6 +38,7 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
   return (
     <article
       id={`work-${project.id}`}
+      data-reveal="fade"
       className="relative scroll-mt-24 overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-10"
     >
       <div
@@ -50,8 +51,10 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
           <h3 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">{project.title}</h3>
           <p className="mt-4 leading-relaxed text-muted-foreground">{project.summary}</p>
           <ul className="tick-list mt-6 space-y-3">
-            {project.highlights.map((item) => (
-              <li key={item}>{item}</li>
+            {project.highlights.map((item, index) => (
+              <li key={item} data-reveal={flip ? "right" : "left"} style={revealDelay(index, 70)}>
+                {item}
+              </li>
             ))}
           </ul>
           <ul className="mt-6 flex flex-wrap gap-2" aria-label="Built with">
@@ -94,11 +97,12 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
           <div className="col-span-2 flex justify-center gap-4 pt-2 sm:gap-6">
             {project.phoneImages.map((shot, index) => (
               <figure key={shot.src} className="w-[38%] max-w-[180px]">
-                {/* The phones rise and straighten as the card scrolls up, the second further and faster. */}
-                <div
-                  className="phone-rise overflow-hidden rounded-[1.2rem] border-[5px] border-neutral-900 bg-muted shadow-xl"
-                  style={motionVars(index === 0 ? { rise: "3rem", tilt: "-6deg" } : { rise: "6rem", tilt: "7deg" })}
-                >
+                {/* Outer box: the phone rises and straightens with the scroll, the second
+                    from further and faster. Inner box: it bobs while you read. */}
+                <div className="phone-rise" style={motionVars(index === 0 ? { rise: "3rem", tilt: "-6deg" } : { rise: "6rem", tilt: "7deg" })}>
+                  <div
+                    className={`${index === 0 ? "float-slow" : "float-slower"} overflow-hidden rounded-[1.2rem] border-[5px] border-neutral-900 bg-muted shadow-xl`}
+                  >
                   <img
                     src={imageUrl(shot.src)}
                     srcSet={imageSrcSet(shot.src, shot.width)}
@@ -110,6 +114,7 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
                     decoding="async"
                     className="block h-auto w-full"
                   />
+                  </div>
                 </div>
               </figure>
             ))}
@@ -117,22 +122,16 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
         </div>
       </div>
 
+      {/* The number cards have no slide-in: the count-up is their entrance. */}
       <dl className="relative mt-10 grid grid-cols-2 gap-3 border-t border-border pt-8 sm:gap-4 lg:grid-cols-4">
-        {project.stats.map((stat, index) => (
+        {project.stats.map((stat) => (
           <div
             key={stat.label}
             className="card-hover flex flex-col-reverse justify-end rounded-2xl border border-border bg-background/60 p-4 sm:p-5"
           >
             <dt className="mt-1 text-sm text-muted-foreground">{stat.label}</dt>
             <dd className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-              {/* The number rises out of its own mask as the row scrolls in. */}
-              <span className="stat-mask">
-                <span className="stat-rise text-gradient" style={revealDelay(index, 100)}>
-                  {stat.prefix}
-                  {stat.value.toLocaleString("en-IN")}
-                  {stat.suffix}
-                </span>
-              </span>
+              <CountUp value={stat.value} prefix={stat.prefix} suffix={stat.suffix} className="text-gradient" />
             </dd>
           </div>
         ))}

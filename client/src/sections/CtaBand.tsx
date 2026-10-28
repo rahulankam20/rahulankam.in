@@ -3,10 +3,8 @@ import { SiWhatsapp } from "react-icons/si";
 import { ctaBand } from "../content";
 import { contactHref, isWhatsapp } from "../lib/links";
 import CtaLink from "../components/CtaLink";
-import { motionVars } from "../lib/motion";
 
-// A dark panel in both themes, just before the contact form. As it scrolls in it
-// opens up, and its two glows drift apart (index.css, Motion).
+// A dark panel with wandering glows, in both themes, just before the contact form.
 export default function CtaBand() {
   const href = contactHref();
 
@@ -14,17 +12,12 @@ export default function CtaBand() {
     <section aria-labelledby="cta-title" className="py-16 sm:py-20">
       <div className="container-page">
         <div
-          className="panel-open relative isolate overflow-hidden rounded-3xl border border-white/10 bg-neutral-950 px-6 py-14 text-center text-white shadow-2xl shadow-black/30 sm:px-12 sm:py-20"
+          data-reveal="zoom"
+          className="relative isolate overflow-hidden rounded-3xl border border-white/10 bg-neutral-950 px-6 py-14 text-center text-white shadow-2xl shadow-black/30 sm:px-12 sm:py-20"
         >
           <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-            <div
-              className="blob panel-drift -left-24 -top-32 h-96 w-96 bg-[radial-gradient(circle,hsl(31_100%_55%/0.55),transparent_65%)]"
-              style={motionVars({ dx: "-3rem", dy: "-2rem" })}
-            />
-            <div
-              className="blob panel-drift -bottom-40 -right-20 h-[28rem] w-[28rem] bg-[radial-gradient(circle,hsl(345_90%_60%/0.4),transparent_65%)]"
-              style={motionVars({ dx: "4rem", dy: "3rem" })}
-            />
+            <div className="blob -left-24 -top-32 h-96 w-96 bg-[radial-gradient(circle,hsl(31_100%_55%/0.55),transparent_65%)]" />
+            <div className="blob -bottom-40 -right-20 h-[28rem] w-[28rem] bg-[radial-gradient(circle,hsl(345_90%_60%/0.4),transparent_65%)] [animation-delay:-8s]" />
           </div>
           <h2 id="cta-title" className="mx-auto max-w-2xl text-3xl font-extrabold tracking-tight sm:text-5xl">
             {ctaBand.title}

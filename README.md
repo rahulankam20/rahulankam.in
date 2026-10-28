@@ -49,14 +49,15 @@ node scripts/screenshots.mjs tableside http://127.0.0.1:8799
 
 ## Motion
 
-All of it is CSS, in the "Motion" block at the end of `client/src/index.css`: no animation library, and no JavaScript except the hero card's lean towards the pointer. Every animation sits behind `prefers-reduced-motion: no-preference`, and the scroll-driven ones also behind `@supports (animation-timeline: view())`; without either, everything is simply in place. Only `transform`, `opacity` and `clip-path` animate, so nothing shifts the layout.
+Every animation is CSS, in the "Motion" block at the end of `client/src/index.css`: no animation library. The only scripts are a 30-line observer that adds a class as a piece scrolls into view, the numbers that count up, and the hero card's lean towards the pointer. Every animation sits behind `prefers-reduced-motion: no-preference`, and the scroll-scrubbed ones also behind `@supports (animation-timeline: view())`; without either, everything is simply in place. Only `transform`, `opacity` and `clip-path` animate, so nothing shifts the layout.
 
-- **On load:** one entrance. The headline's words rise out of their masks and the video card settles from a tilt; both move, neither fades, because they are the largest things on the first screen.
-- **On scroll, one scene per screen:** the hero card leans back while its backdrop drifts at three depths; each project's screenshots are uncovered and its phones rise and straighten; the project numbers rise out of their masks; the process steps are sticky stacking cards on a phone and a self-drawing line on a laptop; the "why me" icons spin into place; the experience timeline draws itself; the call-to-action panel opens while its glows drift apart.
-- **Reveals:** add `data-reveal` (or `="fade"`, `"zoom"`, `"left"`, `"right"`, `"wipe"`) to an element, and `revealDelay(index)` from `lib/motion.tsx` to stagger a row.
+- **On load:** one staggered entrance. The headline's words rise out of their masks and the video card settles from a tilt (both move, neither fades: they are the largest things on the first screen), then the text, the buttons and the badges follow.
+- **Idle:** the glows wander, the badges and the phones bob, the strip rolls.
+- **Scroll-triggered reveals:** add `data-reveal` (or `="fade"`, `"zoom"`, `"left"`, `"right"`, `"line"`) to an element and `revealDelay(index)` from `lib/motion.tsx` to stagger a row. `useScrollReveal` hides only what is still below the screen and plays each reveal once as it enters; the numbers count up the same way. Without JavaScript nothing is hidden.
+- **Scroll-scrubbed scenes, one per screen:** the hero is a multi-layer parallax (dots, glows, card and badges each at their own depth); each project's phones rise and straighten as the card scrolls up; the process steps are sticky stacking cards on a phone; the experience timeline draws itself.
 - **Fonts:** headings fall back to "Bricolage Fallback", Arial resized to Bricolage Grotesque's measure, so they keep their line breaks when the web font arrives. Wide screens also preload the font (`scripts/prerender.mjs`); phones don't, because there it lands during hydration and costs about 90 ms of blocking time.
 
-Budget, measured on the built page with Lighthouse's mobile emulation: performance 95 or better, LCP under 2.5 s, blocking time under 100 ms, CLS under 0.05. On 28 October 2026 it scored 99 on a phone (LCP 2.04–2.09 s, blocking 0–6 ms, CLS 0) and 100 on a computer.
+Budget, measured on the built page with Lighthouse's mobile emulation: performance 95 or better, LCP under 2.5 s, blocking time under 100 ms, CLS under 0.05. On 28 October 2026 it scored 99 on a phone (LCP 2.06–2.09 s, blocking 0–4 ms, CLS 0) and 100 on a computer.
 
 ## Running it locally
 
