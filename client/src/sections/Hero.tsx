@@ -24,17 +24,17 @@ export default function Hero() {
           move, the glows go their own ways, the card lags behind the page and
           the badges leave ahead of it (.hero-drift, index.css). */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="hero-drift absolute inset-0" style={motionVars({ dy: "4rem" })}>
+        <div className="hero-drift absolute inset-0" style={motionVars({ dy: "6rem" })}>
           <div className="dot-grid absolute inset-0" />
         </div>
         {/* Each glow: an outer box for the parallax, an inner one that wanders on its own. */}
-        <div className="hero-drift absolute -left-40 -top-48 h-[34rem] w-[34rem]" style={motionVars({ dx: "3rem", dy: "-10rem" })}>
+        <div className="hero-drift absolute -left-40 -top-48 h-[34rem] w-[34rem]" style={motionVars({ dx: "4rem", dy: "-16rem" })}>
           <div className="blob inset-0 bg-[radial-gradient(circle,hsl(var(--glow)/0.32),transparent_65%)]" />
         </div>
-        <div className="hero-drift absolute -right-48 top-10 h-[38rem] w-[38rem]" style={motionVars({ dx: "-4rem", dy: "-16rem" })}>
+        <div className="hero-drift absolute -right-48 top-10 h-[38rem] w-[38rem]" style={motionVars({ dx: "-6rem", dy: "-24rem" })}>
           <div className="blob inset-0 bg-[radial-gradient(circle,hsl(var(--grad-to)/0.16),transparent_65%)] [animation-delay:-6s]" />
         </div>
-        <div className="hero-drift absolute -bottom-64 left-1/3 h-[32rem] w-[32rem]" style={motionVars({ dy: "6rem" })}>
+        <div className="hero-drift absolute -bottom-64 left-1/3 h-[32rem] w-[32rem]" style={motionVars({ dy: "10rem" })}>
           <div className="blob inset-0 bg-[radial-gradient(circle,hsl(var(--grad-via)/0.22),transparent_65%)] [animation-delay:-12s]" />
         </div>
       </div>
@@ -123,7 +123,7 @@ export default function Hero() {
           className="load-zoom relative mx-2 mb-8 sm:mx-6 lg:mx-0"
           style={loadDelay(150)}
         >
-          <div className="hero-drift" style={motionVars({ dy: "5rem" })}>
+          <div className="hero-drift hero-card-layer">
           <Tilt>
             {showVideo ? (
               <IntroVideo />
@@ -179,7 +179,7 @@ export default function Hero() {
                   >
                     {/* Nearer the viewer than the card, so they leave ahead of it; they
                         arrive after the card, and bob while the page is still. */}
-                    <div className="hero-drift" style={motionVars({ dy: index === 0 ? "-4rem" : "-2rem" })}>
+                    <div className="hero-drift" style={motionVars({ dy: index === 0 ? "-9rem" : "-5rem" })}>
                       <div className="load-in" style={loadDelay(700 + index * 120)}>
                         <div
                           className={`${index === 0 ? "float-slower" : "float-slow"} flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold shadow-xl`}

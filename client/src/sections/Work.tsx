@@ -39,7 +39,9 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
     <article
       id={`work-${project.id}`}
       data-reveal="fade"
-      className="relative scroll-mt-24 overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-10"
+      // overflow-clip, not overflow-hidden: hidden makes the card a scroll container, and the
+      // phones' scroll timeline would then measure their place inside the card, not the page.
+      className="relative scroll-mt-24 overflow-clip rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-10"
     >
       <div
         aria-hidden
@@ -97,9 +99,9 @@ function ProjectCard({ project, flip }: { project: Project; flip: boolean }) {
           <div className="col-span-2 flex justify-center gap-4 pt-2 sm:gap-6">
             {project.phoneImages.map((shot, index) => (
               <figure key={shot.src} className="w-[38%] max-w-[180px]">
-                {/* Outer box: the phone rises and straightens with the scroll, the second
-                    from further and faster. Inner box: it bobs while you read. */}
-                <div className="phone-rise" style={motionVars(index === 0 ? { rise: "3rem", tilt: "-6deg" } : { rise: "6rem", tilt: "7deg" })}>
+                {/* Outer box: the phone rises and straightens as it climbs the screen, the
+                    second from further and the other way. Inner box: it bobs while you read. */}
+                <div className="phone-rise" style={motionVars(index === 0 ? { rise: "5rem", tilt: "-14deg" } : { rise: "8rem", tilt: "16deg" })}>
                   <div
                     className={`${index === 0 ? "float-slow" : "float-slower"} overflow-hidden rounded-[1.2rem] border-[5px] border-neutral-900 bg-muted shadow-xl`}
                   >

@@ -617,15 +617,31 @@
       animation-range-end: 100vh;
     }
 
-    /* Work: each project's phones rise and straighten as the card scrolls up. */
+    /* Hero: how far the card lags behind the page over one screen of scrolling.
+       Small on a phone, where the card sits under the text; a long lag on a
+       laptop, where it sits beside the text and the gap is the point. */
+    .hero-card-layer {
+      --dy: 2rem;
+    }
+    @media (min-width: 64rem) {
+      .hero-card-layer {
+        --dy: 12rem;
+      }
+    }
+
+    /* Work: each project's phones rise and straighten, scrubbed evenly from the
+       moment they enter at the bottom until they reach the top of the screen,
+       so the turn is still playing where the eye is, mid-screen. view() reads
+       the nearest scroll container, so no ancestor may be overflow: hidden
+       (the card clips with overflow: clip instead). */
     .phone-rise {
       animation-name: phone-rise;
       animation-duration: 1ms;
-      animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+      animation-timing-function: linear;
       animation-fill-mode: both;
       animation-timeline: view();
       animation-range-start: entry 0%;
-      animation-range-end: cover 50%;
+      animation-range-end: cover 75%;
     }
 
     /* About: the experience timeline draws itself down the page. */

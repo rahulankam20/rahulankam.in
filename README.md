@@ -57,7 +57,7 @@ Every animation is CSS, in the "Motion" block at the end of `client/src/index.cs
 - **Scroll-scrubbed scenes, one per screen:** the hero is a multi-layer parallax (dots, glows, card and badges each at their own depth); each project's phones rise and straighten as the card scrolls up; the process steps are sticky stacking cards on a phone; the experience timeline draws itself.
 - **Fonts:** headings fall back to "Bricolage Fallback", Arial resized to Bricolage Grotesque's measure, so they keep their line breaks when the web font arrives. Wide screens also preload the font (`scripts/prerender.mjs`); phones don't, because there it lands during hydration and costs about 90 ms of blocking time.
 
-Budget, measured on the built page with Lighthouse's mobile emulation: performance 95 or better, LCP under 2.5 s, blocking time under 100 ms, CLS under 0.05. On 28 October 2026 it scored 99 on a phone (LCP 2.06–2.09 s, blocking 0–4 ms, CLS 0) and 100 on a computer.
+Budget, measured on the built page with Lighthouse's mobile emulation: performance 95 or better, LCP under 2.5 s, blocking time under 100 ms, CLS under 0.05. On 28 October 2026 it scored 99 on a phone (LCP 1.97–2.09 s, blocking 0–4 ms, CLS 0) and 100 on a computer.
 
 ## Running it locally
 
