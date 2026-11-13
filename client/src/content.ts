@@ -67,7 +67,7 @@ export const hero = {
   // Its opening frame is the hero's card; the video loads only when the card is
   // pressed. An empty src brings back the screenshots above instead.
   video: {
-    src: "/videos/intro.mp4",
+    src: "/videos/intro-voice.mp4",
     poster: "/images/intro-poster.webp",
     label: "Watch the intro video",
     tagline: "1 minute · three of the demos in action",
@@ -75,7 +75,7 @@ export const hero = {
     title: "Websites and online stores that bring you customers: a 60-second intro",
     description:
       "Three working demos in 60 seconds: an online store with UPI checkout and GST invoices, a clinic website in English, Marathi and Hindi that books on WhatsApp, and a restaurant website with a 44-dish menu and catering quotes.",
-    uploadDate: "2026-10-25",
+    uploadDate: "2026-11-13",
     duration: "PT60S",
     width: 1920,
     height: 1080,
