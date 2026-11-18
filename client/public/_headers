@@ -1,5 +1,8 @@
 # Response headers Cloudflare adds to the site's files (Workers static assets and Pages both read this file).
+# The build (scripts/prerender.mjs) adds the Content-Security-Policy line here.
 /*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Cross-Origin-Opener-Policy: same-origin
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
